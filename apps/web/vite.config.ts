@@ -8,6 +8,8 @@ import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
+  // Listen on IPv4 loopback; default ::1 breaks portless, which proxies to 127.0.0.1.
+  server: { host: '127.0.0.1' },
   plugins: [
     devtools(),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),

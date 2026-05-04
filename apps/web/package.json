@@ -4,9 +4,14 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vp dev --port 3000",
+    "dev": "portless",
+    "dev:vite": "vp dev",
     "preview": "vp preview",
     "check": "vp check"
+  },
+  "portless": {
+    "name": "memoria",
+    "script": "dev:vite"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",

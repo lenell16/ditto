@@ -10,6 +10,7 @@
     "prepare": "vp config"
   },
   "devDependencies": {
+    "portless": "^0.12.0",
     "turbo": "^2.8.17",
     "typescript": "~6.0.2",
     "vite-plus": "catalog:"
