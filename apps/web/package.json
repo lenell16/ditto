@@ -7,10 +7,7 @@
     "dev": "vp dev --port 3000",
     "build": "vp build",
     "preview": "vp preview",
-    "lint": "vp lint",
-    "format": "vp fmt",
-    "format:check": "vp fmt --check",
-    "typecheck": "tsc --noEmit"
+    "check": "vp check"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
