@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "dev": "vp dev --port 3000",
-    "build": "vp build",
     "preview": "vp preview",
     "check": "vp check"
   },

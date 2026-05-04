@@ -15,6 +15,20 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
+  run: {
+    tasks: {
+      build: {
+        command: 'vp build',
+        env: ['NODE_ENV'],
+        input: [
+          { auto: true },
+          '.env*',
+          '!.output/**',
+          '!node_modules/.nitro/**',
+        ],
+      },
+    },
+  },
 })
 
 export default config
