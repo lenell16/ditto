@@ -7,13 +7,13 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "turbo format",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "prepare": "vp config"
   },
   "devDependencies": {
-    "oxfmt": "^0.47.0",
-    "oxlint": "^1.62.0",
     "turbo": "^2.8.17",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.2",
+    "vite-plus": "catalog:"
   },
   "engines": {
     "node": ">=22.12.0"

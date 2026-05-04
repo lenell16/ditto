@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "oxlint",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
+    "lint": "vp lint",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
