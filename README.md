@@ -1,6 +1,6 @@
 # shadcn/ui monorepo template
 
-This is a TanStack Start monorepo template with shadcn/ui.
+This is a TanStack Start monorepo template with shadcn/ui. (Test PR — safe to close.)
 
 ## Adding components
 
