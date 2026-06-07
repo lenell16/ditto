@@ -23,6 +23,8 @@
     "allowJs": true,
     "paths": {
       "@/*": ["./src/*"],
+      "@workspace/db": ["../../packages/db/src/index.ts"],
+      "@workspace/db/*": ["../../packages/db/src/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     }
   }

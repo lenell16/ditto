@@ -21,6 +21,7 @@
     "@tanstack/react-router-ssr-query": "latest",
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.132.0",
+    "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
     "lucide-react": "^1.14.0",
     "nitro": "npm:nitro-nightly@latest",

@@ -1,0 +1,32 @@
+{
+  "name": "@workspace/db",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx scripts/seed.ts",
+    "check": "vp check"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "latest",
+    "@electric-sql/pglite-pgvector": "latest",
+    "@neondatabase/serverless": "latest",
+    "drizzle-orm": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "dotenv": "latest",
+    "drizzle-kit": "latest",
+    "drizzle-seed": "^0.3.1",
+    "postgres": "latest",
+    "tsx": "latest",
+    "typescript": "~6.0.2"
+  }
+}
