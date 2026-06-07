@@ -5,6 +5,7 @@ import { defineConfig } from 'vite-plus'
 import zip from 'vite-plugin-zip-pack'
 import manifest from './manifest.config.ts'
 import pkg from './package.json'
+import { crxjsVite8Compat } from './vite.crxjs-vite8-compat.js'
 
 export default defineConfig({
   resolve: {
@@ -13,6 +14,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    crxjsVite8Compat(),
     react(),
     crx({ manifest }),
     zip({
