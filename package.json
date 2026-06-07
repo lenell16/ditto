@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "vp run -r build",
-    "dev": "vp run web#dev",
+    "dev": "vp run --filter '{apps/*}' dev",
     "check": "vp check",
     "test": "vp test",
     "prepare": "vp config"
