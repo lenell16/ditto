@@ -33,15 +33,24 @@ importers:
 
   apps/ext:
     dependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.1.18
+        version: 4.2.1(@voidzero-dev/vite-plus-core@0.1.20(@types/node@25.9.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(typescript@6.0.3))
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      lucide-react:
+        specifier: ^1.14.0
+        version: 1.14.0(react@19.2.4)
       react:
         specifier: ^19.2.4
         version: 19.2.4
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.2.1
     devDependencies:
       '@crxjs/vite-plugin':
         specifier: ^2.4.0
@@ -5650,6 +5659,13 @@ snapshots:
       '@tailwindcss/oxide': 4.2.1
       tailwindcss: 4.2.1
       vite: '@voidzero-dev/vite-plus-core@0.1.20(@types/node@25.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(typescript@6.0.3)'
+
+  '@tailwindcss/vite@4.2.1(@voidzero-dev/vite-plus-core@0.1.20(@types/node@25.9.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(typescript@6.0.3))':
+    dependencies:
+      '@tailwindcss/node': 4.2.1
+      '@tailwindcss/oxide': 4.2.1
+      tailwindcss: 4.2.1
+      vite: '@voidzero-dev/vite-plus-core@0.1.20(@types/node@25.9.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(typescript@6.0.3)'
 
   '@tailwindcss/vite@4.2.1(vite@8.0.10(@types/node@25.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))':
     dependencies:
