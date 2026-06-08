@@ -22,6 +22,11 @@ function App() {
           <Link to="/chat">
             <Button className="mt-2">Open chat</Button>
           </Link>
+          <Link to="/data-grid">
+            <Button className="mt-2" variant="outline">
+              Data grid demo
+            </Button>
+          </Link>
           <p className="mt-4 text-muted-foreground">
             {memories.length === 0
               ? 'No memories yet.'

@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DataGridRouteImport } from './routes/data-grid'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
 
+const DataGridRoute = DataGridRouteImport.update({
+  id: '/data-grid',
+  path: '/data-grid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -38,12 +44,14 @@ const ApiAiStatusRoute = ApiAiStatusRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/data-grid': typeof DataGridRoute
   '/api/chat': typeof ApiChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/data-grid': typeof DataGridRoute
   '/api/chat': typeof ApiChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
@@ -51,26 +59,35 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/data-grid': typeof DataGridRoute
   '/api/chat': typeof ApiChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chat' | '/api/chat' | '/api/ai/status'
+  fullPaths: '/' | '/chat' | '/data-grid' | '/api/chat' | '/api/ai/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/api/chat' | '/api/ai/status'
-  id: '__root__' | '/' | '/chat' | '/api/chat' | '/api/ai/status'
+  to: '/' | '/chat' | '/data-grid' | '/api/chat' | '/api/ai/status'
+  id: '__root__' | '/' | '/chat' | '/data-grid' | '/api/chat' | '/api/ai/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatRoute: typeof ChatRoute
+  DataGridRoute: typeof DataGridRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiAiStatusRoute: typeof ApiAiStatusRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/data-grid': {
+      id: '/data-grid'
+      path: '/data-grid'
+      fullPath: '/data-grid'
+      preLoaderRoute: typeof DataGridRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
+  DataGridRoute: DataGridRoute,
   ApiChatRoute: ApiChatRoute,
   ApiAiStatusRoute: ApiAiStatusRoute,
 }
