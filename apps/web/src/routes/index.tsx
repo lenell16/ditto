@@ -27,6 +27,11 @@ function App() {
               Data grid demo
             </Button>
           </Link>
+          <Link to="/forms">
+            <Button className="mt-2" variant="outline">
+              Forms demo
+            </Button>
+          </Link>
           <p className="mt-4 text-muted-foreground">
             {memories.length === 0
               ? 'No memories yet.'

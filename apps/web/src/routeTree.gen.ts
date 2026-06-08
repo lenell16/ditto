@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as FormsRouteImport } from './routes/forms'
 import { Route as DataGridRouteImport } from './routes/data-grid'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
 
+const FormsRoute = FormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DataGridRoute = DataGridRouteImport.update({
   id: '/data-grid',
   path: '/data-grid',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
+  '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
+  '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
@@ -60,27 +68,49 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
+  '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chat' | '/data-grid' | '/api/chat' | '/api/ai/status'
+  fullPaths:
+    | '/'
+    | '/chat'
+    | '/data-grid'
+    | '/forms'
+    | '/api/chat'
+    | '/api/ai/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/data-grid' | '/api/chat' | '/api/ai/status'
-  id: '__root__' | '/' | '/chat' | '/data-grid' | '/api/chat' | '/api/ai/status'
+  to: '/' | '/chat' | '/data-grid' | '/forms' | '/api/chat' | '/api/ai/status'
+  id:
+    | '__root__'
+    | '/'
+    | '/chat'
+    | '/data-grid'
+    | '/forms'
+    | '/api/chat'
+    | '/api/ai/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatRoute: typeof ChatRoute
   DataGridRoute: typeof DataGridRoute
+  FormsRoute: typeof FormsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiAiStatusRoute: typeof ApiAiStatusRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/forms': {
+      id: '/forms'
+      path: '/forms'
+      fullPath: '/forms'
+      preLoaderRoute: typeof FormsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/data-grid': {
       id: '/data-grid'
       path: '/data-grid'
@@ -123,6 +153,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
   DataGridRoute: DataGridRoute,
+  FormsRoute: FormsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiAiStatusRoute: ApiAiStatusRoute,
 }
