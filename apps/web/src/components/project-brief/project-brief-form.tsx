@@ -88,12 +88,10 @@ export function ProjectBriefForm({ onSubmitted }: ProjectBriefFormProps) {
           selector={(state) => ({
             canSubmit: state.canSubmit,
             isSubmitting: state.isSubmitting,
-            isPristine: state.isPristine,
           })}
         >
           {(state) => {
-            const blocked =
-              !state.canSubmit || state.isPristine || state.isSubmitting
+            const blocked = !state.canSubmit || state.isSubmitting
 
             return (
               <Button
