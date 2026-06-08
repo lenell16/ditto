@@ -23,6 +23,7 @@ export default defineConfig({
       'pnpm-lock.yaml',
       '**/routeTree.gen.ts',
       '.agents/skills/**',
+      'apps/web/src/components/ai-elements/**',
     ],
   },
   lint: {
@@ -67,6 +68,7 @@ export default defineConfig({
       '**/routeTree.gen.ts',
       '**/vite.config.*.timestamp-*.*',
       '.agents/skills/**',
+      'apps/web/src/components/ai-elements/**',
     ],
   },
 })

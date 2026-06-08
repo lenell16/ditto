@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@workspace/ui/components/button'
 
 import { listMemories } from '@/server/memories'
@@ -19,6 +19,9 @@ function App() {
           <p>You may now add components and start building.</p>
           <p>We&apos;ve already added the button component for you.</p>
           <Button className="mt-2">Button</Button>
+          <Link to="/chat">
+            <Button className="mt-2">Open chat</Button>
+          </Link>
           <p className="mt-4 text-muted-foreground">
             {memories.length === 0
               ? 'No memories yet.'
