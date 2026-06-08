@@ -22,6 +22,7 @@ export default defineConfig({
       '.vinxi/',
       'pnpm-lock.yaml',
       '**/routeTree.gen.ts',
+      '.agents/skills/**',
     ],
   },
   lint: {
@@ -65,6 +66,7 @@ export default defineConfig({
       '**/.output/**',
       '**/routeTree.gen.ts',
       '**/vite.config.*.timestamp-*.*',
+      '.agents/skills/**',
     ],
   },
 })
