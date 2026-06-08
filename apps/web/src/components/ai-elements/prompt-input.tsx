@@ -179,8 +179,8 @@ const captureScreenshot = async (): Promise<File | null> => {
 // ============================================================================
 
 export interface AttachmentsContext {
-  files: (FileUIPart & { id: string })[];
-  add: (files: File[] | FileList) => void;
+  files: Array<FileUIPart & { id: string }>;
+  add: (files: Array<File> | FileList) => void;
   remove: (id: string) => void;
   clear: () => void;
   openFileDialog: () => void;
@@ -255,13 +255,13 @@ export const PromptInputProvider = ({
 
   // ----- attachments state (global when wrapped)
   const [attachmentFiles, setAttachmentFiles] = useState<
-    (FileUIPart & { id: string })[]
+    Array<FileUIPart & { id: string }>
   >([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   // oxlint-disable-next-line eslint(no-empty-function)
   const openRef = useRef<() => void>(() => { });
 
-  const add = useCallback((files: File[] | FileList) => {
+  const add = useCallback((files: Array<File> | FileList) => {
     const incoming = [...files];
     if (incoming.length === 0) {
       return;
@@ -389,8 +389,8 @@ export const usePromptInputAttachments = () => {
 // ============================================================================
 
 export interface ReferencedSourcesContext {
-  sources: (SourceDocumentUIPart & { id: string })[];
-  add: (sources: SourceDocumentUIPart[] | SourceDocumentUIPart) => void;
+  sources: Array<SourceDocumentUIPart & { id: string }>;
+  add: (sources: Array<SourceDocumentUIPart> | SourceDocumentUIPart) => void;
   remove: (id: string) => void;
   clear: () => void;
 }
@@ -487,7 +487,7 @@ export const PromptInputActionAddScreenshot = ({
 
 export interface PromptInputMessage {
   text: string;
-  files: FileUIPart[];
+  files: Array<FileUIPart>;
 }
 
 export type PromptInputProps = Omit<
@@ -537,12 +537,12 @@ export const PromptInput = ({
   const formRef = useRef<HTMLFormElement | null>(null);
 
   // ----- Local attachments (only used when no provider)
-  const [items, setItems] = useState<(FileUIPart & { id: string })[]>([]);
+  const [items, setItems] = useState<Array<FileUIPart & { id: string }>>([]);
   const files = usingProvider ? controller.attachments.files : items;
 
   // ----- Local referenced sources (always local to PromptInput)
   const [referencedSources, setReferencedSources] = useState<
-    (SourceDocumentUIPart & { id: string })[]
+    Array<SourceDocumentUIPart & { id: string }>
   >([]);
 
   // Keep a ref to files for cleanup on unmount (avoids stale closure)
@@ -580,7 +580,7 @@ export const PromptInput = ({
   );
 
   const addLocal = useCallback(
-    (fileList: File[] | FileList) => {
+    (fileList: Array<File> | FileList) => {
       const incoming = [...fileList];
       const accepted = incoming.filter((f) => matchesAccept(f));
       if (incoming.length && accepted.length === 0) {
@@ -614,7 +614,7 @@ export const PromptInput = ({
             message: "Too many files. Some were not added.",
           });
         }
-        const next: (FileUIPart & { id: string })[] = [];
+        const next: Array<FileUIPart & { id: string }> = [];
         for (const file of capped) {
           next.push({
             filename: file.name,
@@ -644,7 +644,7 @@ export const PromptInput = ({
 
   // Wrapper that validates files before calling provider's add
   const addWithProviderValidation = useCallback(
-    (fileList: File[] | FileList) => {
+    (fileList: Array<File> | FileList) => {
       const incoming = [...fileList];
       const accepted = incoming.filter((f) => matchesAccept(f));
       if (incoming.length && accepted.length === 0) {
@@ -829,7 +829,7 @@ export const PromptInput = ({
 
   const refsCtx = useMemo<ReferencedSourcesContext>(
     () => ({
-      add: (incoming: SourceDocumentUIPart[] | SourceDocumentUIPart) => {
+      add: (incoming: Array<SourceDocumentUIPart> | SourceDocumentUIPart) => {
         const array = Array.isArray(incoming) ? incoming : [incoming];
         setReferencedSources((prev) => [
           ...prev,
@@ -865,7 +865,7 @@ export const PromptInput = ({
 
       try {
         // Convert blob URLs to data URLs asynchronously
-        const convertedFiles: FileUIPart[] = await Promise.all(
+        const convertedFiles: Array<FileUIPart> = await Promise.all(
           files.map(async ({ id: _id, ...item }) => {
             if (item.url?.startsWith("blob:")) {
               const dataUrl = await convertBlobUrlToDataUrl(item.url);
@@ -1023,7 +1023,7 @@ export const PromptInputTextarea = ({
         return;
       }
 
-      const files: File[] = [];
+      const files: Array<File> = [];
 
       for (const item of items) {
         if (item.kind === "file") {
