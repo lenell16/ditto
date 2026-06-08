@@ -18,6 +18,7 @@ import {
 } from '@/components/ai-elements/message'
 import {
   PromptInput,
+  PromptInputFooter,
   PromptInputSubmit,
   PromptInputTextarea,
 } from '@/components/ai-elements/prompt-input'
@@ -78,17 +79,20 @@ export function ChatPage() {
           <ConversationScrollButton />
         </Conversation>
 
-        <div className="border-t p-4">
+        <div className="border-t bg-muted/20 px-4 py-3">
           <PromptInput onSubmit={handleSubmit}>
             <PromptInputTextarea
               value={input}
               placeholder="Say something..."
               onChange={(e) => setInput(e.currentTarget.value)}
+              className="max-h-32 min-h-10 py-2"
             />
-            <PromptInputSubmit
-              status={status === 'streaming' ? 'streaming' : 'ready'}
-              disabled={!input.trim()}
-            />
+            <PromptInputFooter className="justify-end pt-1">
+              <PromptInputSubmit
+                status={status === 'streaming' ? 'streaming' : 'ready'}
+                disabled={!input.trim()}
+              />
+            </PromptInputFooter>
           </PromptInput>
         </div>
       </div>
