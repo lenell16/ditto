@@ -110,7 +110,7 @@ export type ConversationDownloadProps = Omit<
   ComponentProps<typeof Button>,
   "onClick"
 > & {
-  messages: UIMessage[];
+  messages: Array<UIMessage>;
   filename?: string;
   formatMessage?: (message: UIMessage, index: number) => string;
 };
@@ -122,7 +122,7 @@ const defaultFormatMessage = (message: UIMessage): string => {
 };
 
 export const messagesToMarkdown = (
-  messages: UIMessage[],
+  messages: Array<UIMessage>,
   formatMessage: (
     message: UIMessage,
     index: number
