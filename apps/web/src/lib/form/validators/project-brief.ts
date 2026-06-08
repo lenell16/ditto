@@ -33,26 +33,29 @@ export function milestoneDuplicateDatesValidator({
   return undefined
 }
 
-export const slugFieldAsyncValidators = {
-  onChangeAsync: async ({
-    value,
-    signal,
-  }: {
-    value: string
-    signal: AbortSignal
-  }) => {
-    if (!value || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+async function validateSlugAvailability({
+  value,
+  signal,
+}: {
+  value: string
+  signal: AbortSignal
+}) {
+  if (!value || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+    return undefined
+  }
+
+  try {
+    const { available } = await checkSlugAvailability(value, signal)
+    return available ? undefined : 'This slug is already taken'
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
       return undefined
     }
+    throw error
+  }
+}
 
-    try {
-      const { available } = await checkSlugAvailability(value, signal)
-      return available ? undefined : 'This slug is already taken'
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        return undefined
-      }
-      throw error
-    }
-  },
+export const slugFieldAsyncValidators = {
+  onChangeAsync: validateSlugAvailability,
+  onSubmitAsync: validateSlugAvailability,
 } as const
