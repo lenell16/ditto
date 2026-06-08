@@ -18,6 +18,12 @@
       "sourceType": "github",
       "skillPath": "skills/portless/SKILL.md",
       "computedHash": "47c88e1e39eda1c18f31ca40b6e175483d8d36dbcf0672e240dcb1bd3ad554a4"
+    },
+    "streamdown": {
+      "source": "vercel/streamdown",
+      "sourceType": "github",
+      "skillPath": "skills/streamdown/SKILL.md",
+      "computedHash": "c842552c75b80abb74ef8f92481d34684c709884dd2df22c2ab3b183aee582fe"
     }
   }
 }
