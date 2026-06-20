@@ -27,6 +27,11 @@ function App() {
               Durable chat
             </Button>
           </Link>
+          <Link to="/durable-chat-multi">
+            <Button className="mt-2" variant="outline">
+              Multi-turn durable chat
+            </Button>
+          </Link>
           <Link to="/data-grid">
             <Button className="mt-2" variant="outline">
               Data grid demo

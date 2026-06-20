@@ -10,17 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as FormsRouteImport } from './routes/forms'
+import { Route as DurableChatMultiRouteImport } from './routes/durable-chat-multi'
 import { Route as DurableChatRouteImport } from './routes/durable-chat'
 import { Route as DataGridRouteImport } from './routes/data-grid'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiDurableChatMultiRouteImport } from './routes/api/durable-chat-multi'
 import { Route as ApiDurableChatRouteImport } from './routes/api/durable-chat'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiDurableChatMultiIdRouteImport } from './routes/api/durable-chat-multi/$id'
 import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
+import { Route as ApiDurableChatMultiIdStreamRouteImport } from './routes/api/durable-chat-multi/$id/stream'
 
 const FormsRoute = FormsRouteImport.update({
   id: '/forms',
   path: '/forms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DurableChatMultiRoute = DurableChatMultiRouteImport.update({
+  id: '/durable-chat-multi',
+  path: '/durable-chat-multi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DurableChatRoute = DurableChatRouteImport.update({
@@ -43,6 +52,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDurableChatMultiRoute = ApiDurableChatMultiRouteImport.update({
+  id: '/api/durable-chat-multi',
+  path: '/api/durable-chat-multi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDurableChatRoute = ApiDurableChatRouteImport.update({
   id: '/api/durable-chat',
   path: '/api/durable-chat',
@@ -53,31 +67,50 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDurableChatMultiIdRoute = ApiDurableChatMultiIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiDurableChatMultiRoute,
+} as any)
 const ApiAiStatusRoute = ApiAiStatusRouteImport.update({
   id: '/api/ai/status',
   path: '/api/ai/status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDurableChatMultiIdStreamRoute =
+  ApiDurableChatMultiIdStreamRouteImport.update({
+    id: '/stream',
+    path: '/stream',
+    getParentRoute: () => ApiDurableChatMultiIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
   '/durable-chat': typeof DurableChatRoute
+  '/durable-chat-multi': typeof DurableChatMultiRoute
   '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/durable-chat': typeof ApiDurableChatRoute
+  '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
   '/api/ai/status': typeof ApiAiStatusRoute
+  '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
+  '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
   '/durable-chat': typeof DurableChatRoute
+  '/durable-chat-multi': typeof DurableChatMultiRoute
   '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/durable-chat': typeof ApiDurableChatRoute
+  '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
   '/api/ai/status': typeof ApiAiStatusRoute
+  '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
+  '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +118,14 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
   '/durable-chat': typeof DurableChatRoute
+  '/durable-chat-multi': typeof DurableChatMultiRoute
   '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/durable-chat': typeof ApiDurableChatRoute
+  '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
   '/api/ai/status': typeof ApiAiStatusRoute
+  '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
+  '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +134,42 @@ export interface FileRouteTypes {
     | '/chat'
     | '/data-grid'
     | '/durable-chat'
+    | '/durable-chat-multi'
     | '/forms'
     | '/api/chat'
     | '/api/durable-chat'
+    | '/api/durable-chat-multi'
     | '/api/ai/status'
+    | '/api/durable-chat-multi/$id'
+    | '/api/durable-chat-multi/$id/stream'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/chat'
     | '/data-grid'
     | '/durable-chat'
+    | '/durable-chat-multi'
     | '/forms'
     | '/api/chat'
     | '/api/durable-chat'
+    | '/api/durable-chat-multi'
     | '/api/ai/status'
+    | '/api/durable-chat-multi/$id'
+    | '/api/durable-chat-multi/$id/stream'
   id:
     | '__root__'
     | '/'
     | '/chat'
     | '/data-grid'
     | '/durable-chat'
+    | '/durable-chat-multi'
     | '/forms'
     | '/api/chat'
     | '/api/durable-chat'
+    | '/api/durable-chat-multi'
     | '/api/ai/status'
+    | '/api/durable-chat-multi/$id'
+    | '/api/durable-chat-multi/$id/stream'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,9 +177,11 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   DataGridRoute: typeof DataGridRoute
   DurableChatRoute: typeof DurableChatRoute
+  DurableChatMultiRoute: typeof DurableChatMultiRoute
   FormsRoute: typeof FormsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiDurableChatRoute: typeof ApiDurableChatRoute
+  ApiDurableChatMultiRoute: typeof ApiDurableChatMultiRouteWithChildren
   ApiAiStatusRoute: typeof ApiAiStatusRoute
 }
 
@@ -141,6 +192,13 @@ declare module '@tanstack/react-router' {
       path: '/forms'
       fullPath: '/forms'
       preLoaderRoute: typeof FormsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/durable-chat-multi': {
+      id: '/durable-chat-multi'
+      path: '/durable-chat-multi'
+      fullPath: '/durable-chat-multi'
+      preLoaderRoute: typeof DurableChatMultiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/durable-chat': {
@@ -171,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/durable-chat-multi': {
+      id: '/api/durable-chat-multi'
+      path: '/api/durable-chat-multi'
+      fullPath: '/api/durable-chat-multi'
+      preLoaderRoute: typeof ApiDurableChatMultiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/durable-chat': {
       id: '/api/durable-chat'
       path: '/api/durable-chat'
@@ -185,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/durable-chat-multi/$id': {
+      id: '/api/durable-chat-multi/$id'
+      path: '/$id'
+      fullPath: '/api/durable-chat-multi/$id'
+      preLoaderRoute: typeof ApiDurableChatMultiIdRouteImport
+      parentRoute: typeof ApiDurableChatMultiRoute
+    }
     '/api/ai/status': {
       id: '/api/ai/status'
       path: '/api/ai/status'
@@ -192,17 +264,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/durable-chat-multi/$id/stream': {
+      id: '/api/durable-chat-multi/$id/stream'
+      path: '/stream'
+      fullPath: '/api/durable-chat-multi/$id/stream'
+      preLoaderRoute: typeof ApiDurableChatMultiIdStreamRouteImport
+      parentRoute: typeof ApiDurableChatMultiIdRoute
+    }
   }
 }
+
+interface ApiDurableChatMultiIdRouteChildren {
+  ApiDurableChatMultiIdStreamRoute: typeof ApiDurableChatMultiIdStreamRoute
+}
+
+const ApiDurableChatMultiIdRouteChildren: ApiDurableChatMultiIdRouteChildren = {
+  ApiDurableChatMultiIdStreamRoute: ApiDurableChatMultiIdStreamRoute,
+}
+
+const ApiDurableChatMultiIdRouteWithChildren =
+  ApiDurableChatMultiIdRoute._addFileChildren(
+    ApiDurableChatMultiIdRouteChildren,
+  )
+
+interface ApiDurableChatMultiRouteChildren {
+  ApiDurableChatMultiIdRoute: typeof ApiDurableChatMultiIdRouteWithChildren
+}
+
+const ApiDurableChatMultiRouteChildren: ApiDurableChatMultiRouteChildren = {
+  ApiDurableChatMultiIdRoute: ApiDurableChatMultiIdRouteWithChildren,
+}
+
+const ApiDurableChatMultiRouteWithChildren =
+  ApiDurableChatMultiRoute._addFileChildren(ApiDurableChatMultiRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
   DataGridRoute: DataGridRoute,
   DurableChatRoute: DurableChatRoute,
+  DurableChatMultiRoute: DurableChatMultiRoute,
   FormsRoute: FormsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiDurableChatRoute: ApiDurableChatRoute,
+  ApiDurableChatMultiRoute: ApiDurableChatMultiRouteWithChildren,
   ApiAiStatusRoute: ApiAiStatusRoute,
 }
 export const routeTree = rootRouteImport
