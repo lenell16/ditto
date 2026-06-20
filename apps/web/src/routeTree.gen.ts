@@ -10,15 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as FormsRouteImport } from './routes/forms'
+import { Route as DurableChatRouteImport } from './routes/durable-chat'
 import { Route as DataGridRouteImport } from './routes/data-grid'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiDurableChatRouteImport } from './routes/api/durable-chat'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
 
 const FormsRoute = FormsRouteImport.update({
   id: '/forms',
   path: '/forms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DurableChatRoute = DurableChatRouteImport.update({
+  id: '/durable-chat',
+  path: '/durable-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DataGridRoute = DataGridRouteImport.update({
@@ -36,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDurableChatRoute = ApiDurableChatRouteImport.update({
+  id: '/api/durable-chat',
+  path: '/api/durable-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -51,16 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
+  '/durable-chat': typeof DurableChatRoute
   '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
+  '/durable-chat': typeof DurableChatRoute
   '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
 export interface FileRoutesById {
@@ -68,8 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/data-grid': typeof DataGridRoute
+  '/durable-chat': typeof DurableChatRoute
   '/forms': typeof FormsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/ai/status': typeof ApiAiStatusRoute
 }
 export interface FileRouteTypes {
@@ -78,18 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/chat'
     | '/data-grid'
+    | '/durable-chat'
     | '/forms'
     | '/api/chat'
+    | '/api/durable-chat'
     | '/api/ai/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/data-grid' | '/forms' | '/api/chat' | '/api/ai/status'
+  to:
+    | '/'
+    | '/chat'
+    | '/data-grid'
+    | '/durable-chat'
+    | '/forms'
+    | '/api/chat'
+    | '/api/durable-chat'
+    | '/api/ai/status'
   id:
     | '__root__'
     | '/'
     | '/chat'
     | '/data-grid'
+    | '/durable-chat'
     | '/forms'
     | '/api/chat'
+    | '/api/durable-chat'
     | '/api/ai/status'
   fileRoutesById: FileRoutesById
 }
@@ -97,8 +127,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatRoute: typeof ChatRoute
   DataGridRoute: typeof DataGridRoute
+  DurableChatRoute: typeof DurableChatRoute
   FormsRoute: typeof FormsRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiDurableChatRoute: typeof ApiDurableChatRoute
   ApiAiStatusRoute: typeof ApiAiStatusRoute
 }
 
@@ -109,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/forms'
       fullPath: '/forms'
       preLoaderRoute: typeof FormsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/durable-chat': {
+      id: '/durable-chat'
+      path: '/durable-chat'
+      fullPath: '/durable-chat'
+      preLoaderRoute: typeof DurableChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data-grid': {
@@ -132,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/durable-chat': {
+      id: '/api/durable-chat'
+      path: '/api/durable-chat'
+      fullPath: '/api/durable-chat'
+      preLoaderRoute: typeof ApiDurableChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -153,8 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
   DataGridRoute: DataGridRoute,
+  DurableChatRoute: DurableChatRoute,
   FormsRoute: FormsRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiDurableChatRoute: ApiDurableChatRoute,
   ApiAiStatusRoute: ApiAiStatusRoute,
 }
 export const routeTree = rootRouteImport

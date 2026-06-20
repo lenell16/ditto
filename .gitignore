@@ -32,6 +32,11 @@ npm-debug.log*
 # Local database
 .data/
 
+# Workflow SDK (local world persistence + test artifacts)
+.workflow-data/
+.workflow-vitest/
+.swc/
+
 # Misc
 .DS_Store
 *.pem

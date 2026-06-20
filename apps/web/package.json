@@ -30,6 +30,7 @@
     "@tanstack/react-start": "latest",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/router-plugin": "^1.132.0",
+    "@workflow/ai": "^4.1.2",
     "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
     "ai": "^6.0.197",
@@ -41,6 +42,7 @@
     "streamdown": "^2.5.0",
     "tailwindcss": "^4.1.18",
     "use-stick-to-bottom": "^1.1.6",
+    "workflow": "^4.5.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

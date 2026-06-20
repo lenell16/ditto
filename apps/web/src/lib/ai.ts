@@ -45,9 +45,14 @@ export function getAiStatus() {
   }
 }
 
+export function resolveChatModelId(): string {
+  const provider = getProvider()
+  return process.env.AI_MODEL ?? DEFAULT_MODELS[provider]
+}
+
 export function resolveChatModel(): LanguageModel {
   const provider = getProvider()
-  const modelId = process.env.AI_MODEL ?? DEFAULT_MODELS[provider]
+  const modelId = resolveChatModelId()
 
   switch (provider) {
     case 'anthropic':

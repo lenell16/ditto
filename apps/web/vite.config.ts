@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite-plus'
 import { devtools } from '@tanstack/devtools-vite'
+import { workflow } from 'workflow/vite'
 
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
@@ -11,6 +12,7 @@ const config = defineConfig({
   // Listen on IPv4 loopback; default ::1 breaks portless, which proxies to 127.0.0.1.
   server: { host: '127.0.0.1' },
   plugins: [
+    workflow(),
     devtools(),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),

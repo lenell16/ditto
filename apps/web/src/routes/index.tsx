@@ -22,6 +22,11 @@ function App() {
           <Link to="/chat">
             <Button className="mt-2">Open chat</Button>
           </Link>
+          <Link to="/durable-chat">
+            <Button className="mt-2" variant="outline">
+              Durable chat
+            </Button>
+          </Link>
           <Link to="/data-grid">
             <Button className="mt-2" variant="outline">
               Data grid demo
