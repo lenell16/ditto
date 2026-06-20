@@ -37,6 +37,9 @@ npm-debug.log*
 .workflow-vitest/
 .swc/
 
+# Cursor agent plans (local design scratch; implementation lives in code)
+.cursor/plans/
+
 # Misc
 .DS_Store
 *.pem
