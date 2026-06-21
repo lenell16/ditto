@@ -19,6 +19,12 @@
       "skillPath": "skills/better-result-adopt/SKILL.md",
       "computedHash": "bb2cff6d6db16f141cf2d2789a87e0f4a54992f1839a33dc623a434ac49d6115"
     },
+    "email-sdk": {
+      "source": "opencoredev/email-sdk",
+      "sourceType": "github",
+      "skillPath": "skills/email-sdk/SKILL.md",
+      "computedHash": "a89ab14934a3ad517a256eb52540bbbf4b77e70b4789ad225b0eb345e3077ca5"
+    },
     "portless": {
       "source": "vercel-labs/portless",
       "sourceType": "github",
