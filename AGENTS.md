@@ -93,3 +93,17 @@ If the dev server is not running, start it to regenerate the tree while testing 
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
 <!--VITE PLUS END-->
+
+<!--ERROR HANDLING START-->
+
+## Error handling
+
+For new business-logic functions whose failure is part of the contract
+(not-found, validation, conflict, quota, etc.), return `Result<T, E>` from
+`better-result` with `TaggedError` types instead of throwing. Let library /
+plumbing code (AI SDK, Workflow SDK) and programmer defects throw. Convert at
+the seam: unwrap `Result` with `.match()` in route handlers (→ `Response`) and
+at workflow step boundaries (→ throw). Never use `Result` as a workflow step's
+return type. See the `better-result-adopt` skill for patterns.
+
+<!--ERROR HANDLING END-->
