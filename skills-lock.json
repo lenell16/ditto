@@ -25,6 +25,12 @@
       "skillPath": "skills/email-sdk/SKILL.md",
       "computedHash": "a89ab14934a3ad517a256eb52540bbbf4b77e70b4789ad225b0eb345e3077ca5"
     },
+    "files-sdk": {
+      "source": "haydenbleasel/files-sdk",
+      "sourceType": "github",
+      "skillPath": "skills/files-sdk/SKILL.md",
+      "computedHash": "406110d9f1e0b1106053fa0dd728e6e824a979f4072ed6914f2cd2e37f8853c9"
+    },
     "portless": {
       "source": "vercel-labs/portless",
       "sourceType": "github",
