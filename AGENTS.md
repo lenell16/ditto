@@ -104,6 +104,8 @@ For new business-logic functions whose failure is part of the contract
 plumbing code (AI SDK, Workflow SDK) and programmer defects throw. Convert at
 the seam: unwrap `Result` with `.match()` in route handlers (→ `Response`) and
 at workflow step boundaries (→ throw). Never use `Result` as a workflow step's
-return type. See the `better-result-adopt` skill for patterns.
+return type. See the `better-result-adopt` skill for patterns, and
+`ARCHITECTURE.md` for the stack, layering, and rationale behind these
+conventions (including outbound HTTP via `fetch-extras`).
 
 <!--ERROR HANDLING END-->
