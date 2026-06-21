@@ -8,6 +8,13 @@
       "when": 1780826910418,
       "tag": "0000_regular_triathlon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782043231848,
+      "tag": "0001_flashy_jasper_sitwell",
+      "breakpoints": true
     }
   ]
 }

@@ -19,6 +19,7 @@ import { Route as ApiDurableChatMultiRouteImport } from './routes/api/durable-ch
 import { Route as ApiDurableChatRouteImport } from './routes/api/durable-chat'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDurableChatMultiIdRouteImport } from './routes/api/durable-chat-multi/$id'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
 import { Route as ApiDurableChatMultiIdStreamRouteImport } from './routes/api/durable-chat-multi/$id/stream'
 
@@ -72,6 +73,11 @@ const ApiDurableChatMultiIdRoute = ApiDurableChatMultiIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiDurableChatMultiRoute,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiStatusRoute = ApiAiStatusRouteImport.update({
   id: '/api/ai/status',
   path: '/api/ai/status',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
   '/api/ai/status': typeof ApiAiStatusRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
   '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
   '/api/ai/status': typeof ApiAiStatusRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
   '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
   '/api/ai/status': typeof ApiAiStatusRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
   '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/api/durable-chat'
     | '/api/durable-chat-multi'
     | '/api/ai/status'
+    | '/api/auth/$'
     | '/api/durable-chat-multi/$id'
     | '/api/durable-chat-multi/$id/stream'
   fileRoutesByTo: FileRoutesByTo
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/api/durable-chat'
     | '/api/durable-chat-multi'
     | '/api/ai/status'
+    | '/api/auth/$'
     | '/api/durable-chat-multi/$id'
     | '/api/durable-chat-multi/$id/stream'
   id:
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/api/durable-chat'
     | '/api/durable-chat-multi'
     | '/api/ai/status'
+    | '/api/auth/$'
     | '/api/durable-chat-multi/$id'
     | '/api/durable-chat-multi/$id/stream'
   fileRoutesById: FileRoutesById
@@ -183,6 +195,7 @@ export interface RootRouteChildren {
   ApiDurableChatRoute: typeof ApiDurableChatRoute
   ApiDurableChatMultiRoute: typeof ApiDurableChatMultiRouteWithChildren
   ApiAiStatusRoute: typeof ApiAiStatusRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDurableChatMultiIdRouteImport
       parentRoute: typeof ApiDurableChatMultiRoute
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/status': {
       id: '/api/ai/status'
       path: '/api/ai/status'
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDurableChatRoute: ApiDurableChatRoute,
   ApiDurableChatMultiRoute: ApiDurableChatMultiRouteWithChildren,
   ApiAiStatusRoute: ApiAiStatusRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
