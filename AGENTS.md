@@ -87,7 +87,7 @@ If the dev server is not running, start it to regenerate the tree while testing 
 ## Review Checklist
 
 - [ ] Run `vp install` after pulling remote changes and before getting started.
-- [ ] Run `pnpm --filter web check` (not root `vp check`) to validate web app changes; do not modify `.agents/skills/` files.
+- [ ] Run `pnpm --filter web check` (not root `vp check`) to validate web app changes;
 - [ ] Run `vp test` to run tests.
 - [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
