@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as FormsRouteImport } from './routes/forms'
 import { Route as DurableChatMultiRouteImport } from './routes/durable-chat-multi'
 import { Route as DurableChatRouteImport } from './routes/durable-chat'
@@ -23,6 +24,11 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
 import { Route as ApiDurableChatMultiIdStreamRouteImport } from './routes/api/durable-chat-multi/$id/stream'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FormsRoute = FormsRouteImport.update({
   id: '/forms',
   path: '/forms',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/durable-chat': typeof DurableChatRoute
   '/durable-chat-multi': typeof DurableChatMultiRoute
   '/forms': typeof FormsRoute
+  '/login': typeof LoginRoute
   '/api/chat': typeof ApiChatRoute
   '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/durable-chat': typeof DurableChatRoute
   '/durable-chat-multi': typeof DurableChatMultiRoute
   '/forms': typeof FormsRoute
+  '/login': typeof LoginRoute
   '/api/chat': typeof ApiChatRoute
   '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/durable-chat': typeof DurableChatRoute
   '/durable-chat-multi': typeof DurableChatMultiRoute
   '/forms': typeof FormsRoute
+  '/login': typeof LoginRoute
   '/api/chat': typeof ApiChatRoute
   '/api/durable-chat': typeof ApiDurableChatRoute
   '/api/durable-chat-multi': typeof ApiDurableChatMultiRouteWithChildren
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/durable-chat'
     | '/durable-chat-multi'
     | '/forms'
+    | '/login'
     | '/api/chat'
     | '/api/durable-chat'
     | '/api/durable-chat-multi'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/durable-chat'
     | '/durable-chat-multi'
     | '/forms'
+    | '/login'
     | '/api/chat'
     | '/api/durable-chat'
     | '/api/durable-chat-multi'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/durable-chat'
     | '/durable-chat-multi'
     | '/forms'
+    | '/login'
     | '/api/chat'
     | '/api/durable-chat'
     | '/api/durable-chat-multi'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   DurableChatRoute: typeof DurableChatRoute
   DurableChatMultiRoute: typeof DurableChatMultiRoute
   FormsRoute: typeof FormsRoute
+  LoginRoute: typeof LoginRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiDurableChatRoute: typeof ApiDurableChatRoute
   ApiDurableChatMultiRoute: typeof ApiDurableChatMultiRouteWithChildren
@@ -200,6 +213,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forms': {
       id: '/forms'
       path: '/forms'
@@ -325,6 +345,7 @@ const rootRouteChildren: RootRouteChildren = {
   DurableChatRoute: DurableChatRoute,
   DurableChatMultiRoute: DurableChatMultiRoute,
   FormsRoute: FormsRoute,
+  LoginRoute: LoginRoute,
   ApiChatRoute: ApiChatRoute,
   ApiDurableChatRoute: ApiDurableChatRoute,
   ApiDurableChatMultiRoute: ApiDurableChatMultiRouteWithChildren,

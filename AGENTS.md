@@ -109,3 +109,21 @@ return type. See the `better-result-adopt` skill for patterns, and
 conventions (including outbound HTTP via `fetch-extras`).
 
 <!--ERROR HANDLING END-->
+
+<!-- DEPENDENCY LOOKUPS START -->
+
+## Looking up dependency behavior
+
+When you need a dependency's implementation details or the exact API of the
+installed version (precise export names/signatures), prefer in order:
+
+1. Available doc/reference skills, then the library's official docs / `llms.txt`.
+2. `opensrc path <pkg>` (auto-resolves the version from `pnpm-lock.yaml`), then
+   `rg`/read the cached source — readable implementation at the right version.
+3. As a last resort, read a published `.d.ts` type entry directly.
+
+Do not grep minified `dist` bundles or sourcemaps under `node_modules` to learn
+an API — it is slow and unreliable. (Markdown docs vendored in `node_modules`,
+e.g. `node_modules/vite-plus/docs`, are fine to read.)
+
+<!-- DEPENDENCY LOOKUPS END -->
