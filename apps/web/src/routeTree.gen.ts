@@ -19,6 +19,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiDurableChatMultiRouteImport } from './routes/api/durable-chat-multi'
 import { Route as ApiDurableChatRouteImport } from './routes/api/durable-chat'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiEmbedWhoamiRouteImport } from './routes/api/embed/whoami'
 import { Route as ApiDurableChatMultiIdRouteImport } from './routes/api/durable-chat-multi/$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
@@ -74,6 +75,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEmbedWhoamiRoute = ApiEmbedWhoamiRouteImport.update({
+  id: '/api/embed/whoami',
+  path: '/api/embed/whoami',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDurableChatMultiIdRoute = ApiDurableChatMultiIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/api/ai/status': typeof ApiAiStatusRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
+  '/api/embed/whoami': typeof ApiEmbedWhoamiRoute
   '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
 export interface FileRoutesByTo {
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/api/ai/status': typeof ApiAiStatusRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
+  '/api/embed/whoami': typeof ApiEmbedWhoamiRoute
   '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
 export interface FileRoutesById {
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/api/ai/status': typeof ApiAiStatusRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/durable-chat-multi/$id': typeof ApiDurableChatMultiIdRouteWithChildren
+  '/api/embed/whoami': typeof ApiEmbedWhoamiRoute
   '/api/durable-chat-multi/$id/stream': typeof ApiDurableChatMultiIdStreamRoute
 }
 export interface FileRouteTypes {
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/api/ai/status'
     | '/api/auth/$'
     | '/api/durable-chat-multi/$id'
+    | '/api/embed/whoami'
     | '/api/durable-chat-multi/$id/stream'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/api/ai/status'
     | '/api/auth/$'
     | '/api/durable-chat-multi/$id'
+    | '/api/embed/whoami'
     | '/api/durable-chat-multi/$id/stream'
   id:
     | '__root__'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/api/ai/status'
     | '/api/auth/$'
     | '/api/durable-chat-multi/$id'
+    | '/api/embed/whoami'
     | '/api/durable-chat-multi/$id/stream'
   fileRoutesById: FileRoutesById
 }
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   ApiDurableChatMultiRoute: typeof ApiDurableChatMultiRouteWithChildren
   ApiAiStatusRoute: typeof ApiAiStatusRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiEmbedWhoamiRoute: typeof ApiEmbedWhoamiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -283,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/embed/whoami': {
+      id: '/api/embed/whoami'
+      path: '/api/embed/whoami'
+      fullPath: '/api/embed/whoami'
+      preLoaderRoute: typeof ApiEmbedWhoamiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/durable-chat-multi/$id': {
       id: '/api/durable-chat-multi/$id'
       path: '/$id'
@@ -351,16 +371,18 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDurableChatMultiRoute: ApiDurableChatMultiRouteWithChildren,
   ApiAiStatusRoute: ApiAiStatusRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiEmbedWhoamiRoute: ApiEmbedWhoamiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

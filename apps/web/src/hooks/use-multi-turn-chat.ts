@@ -72,7 +72,7 @@ export function useMultiTurnChat({
 
     if (sessionId === undefined) {
       pendingRunIdRef.current = undefined
-      stop()
+      void stop()
       setMessages([])
     }
   }, [sessionId, setMessages, stop])

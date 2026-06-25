@@ -44,12 +44,13 @@ function DurableChatMultiSession({
     [navigate]
   )
 
-  const { messages, sendMessage, status, runId, endSession } = useMultiTurnChat(
-    {
+  const { messages, sendMessage, status, runId, endSession, stop } =
+    useMultiTurnChat({
       sessionId,
       onSessionIdChange,
-    }
-  )
+    })
+
+  const isGenerating = status === 'submitted' || status === 'streaming'
 
   const handleSubmit = (message: PromptInputMessage) => {
     if (message.text.trim()) {
@@ -128,8 +129,9 @@ function DurableChatMultiSession({
             />
             <PromptInputFooter className="justify-end pt-1">
               <PromptInputSubmit
-                status={status === 'streaming' ? 'streaming' : 'ready'}
-                disabled={!input.trim()}
+                status={status}
+                onStop={stop}
+                disabled={!isGenerating && !input.trim()}
               />
             </PromptInputFooter>
           </PromptInput>

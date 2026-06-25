@@ -26,9 +26,11 @@ import type { PromptInputMessage } from '@/components/ai-elements/prompt-input'
 
 export function ChatPage() {
   const [input, setInput] = useState('')
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({ api: '/api/chat' }),
   })
+
+  const isGenerating = status === 'submitted' || status === 'streaming'
 
   const handleSubmit = (message: PromptInputMessage) => {
     if (message.text.trim()) {
@@ -89,8 +91,9 @@ export function ChatPage() {
             />
             <PromptInputFooter className="justify-end pt-1">
               <PromptInputSubmit
-                status={status === 'streaming' ? 'streaming' : 'ready'}
-                disabled={!input.trim()}
+                status={status}
+                onStop={stop}
+                disabled={!isGenerating && !input.trim()}
               />
             </PromptInputFooter>
           </PromptInput>

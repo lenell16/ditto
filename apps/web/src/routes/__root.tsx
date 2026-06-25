@@ -8,15 +8,19 @@ import { TooltipProvider } from '@workspace/ui/components/tooltip'
 
 import appCss from '@workspace/ui/globals.css?url'
 
+import { EmbedProvider } from '@/components/embed-provider'
+import { isEmbeddedLoad } from '@/lib/embed/detect'
 import { getSession } from '@/server/auth'
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
     const session = await getSession()
-    if (!session && location.pathname !== '/login') {
+    const embedded = isEmbeddedLoad()
+
+    if (!session && !embedded && location.pathname !== '/login') {
       throw redirect({ to: '/login' })
     }
-    return { session }
+    return { session, embedded }
   },
   head: () => ({
     meta: [
@@ -54,7 +58,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          <EmbedProvider>{children}</EmbedProvider>
+        </TooltipProvider>
         <Scripts />
       </body>
     </html>
