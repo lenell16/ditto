@@ -5,6 +5,10 @@ const skillIgnorePatterns = [
   '.claude/skills/**',
   '.cursor/skills/**',
 ]
+const aiElementsIgnorePatterns = [
+  'apps/web/src/components/ai-elements/**',
+  'src/components/ai-elements/**',
+]
 
 export default defineConfig({
   staged: {
@@ -29,7 +33,7 @@ export default defineConfig({
       'pnpm-lock.yaml',
       '**/routeTree.gen.ts',
       ...skillIgnorePatterns,
-      'apps/web/src/components/ai-elements/**',
+      ...aiElementsIgnorePatterns,
     ],
   },
   lint: {
@@ -76,7 +80,7 @@ export default defineConfig({
       '**/routeTree.gen.ts',
       '**/vite.config.*.timestamp-*.*',
       ...skillIgnorePatterns,
-      'apps/web/src/components/ai-elements/**',
+      ...aiElementsIgnorePatterns,
     ],
   },
 })
