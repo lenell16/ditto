@@ -1,19 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getRequestHeaders } from '@tanstack/react-start/server'
 
 import { auth } from '@/lib/auth'
+import { getEmbedWhoamiPayload } from '@/lib/embed/whoami'
 
 export const Route = createFileRoute('/api/embed/whoami')({
   server: {
     handlers: {
-      GET: async () => {
-        const session = await auth.api.getSession({
-          headers: getRequestHeaders(),
-        })
-        return Response.json({
-          authenticated: Boolean(session),
-          user: session?.user ?? null,
-        })
+      GET: async ({ request }) => {
+        const payload = await getEmbedWhoamiPayload(auth, request.headers)
+        return Response.json(payload)
       },
     },
   },
