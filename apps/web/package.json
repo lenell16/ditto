@@ -8,6 +8,7 @@
     "dev:vite": "vp dev",
     "preview": "vp preview",
     "check": "vp check",
+    "seed:dev-user": "tsx --tsconfig tsconfig.json scripts/seed-dev-user.ts",
     "test": "vp test"
   },
   "portless": {
@@ -58,6 +59,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "jsdom": "^28.1.0",
+    "tsx": "latest",
     "typescript": "~6.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:"
