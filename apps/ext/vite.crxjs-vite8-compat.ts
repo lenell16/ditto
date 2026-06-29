@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import type { Plugin } from 'vite-plus'
 
 /** Strip Rolldown-only options before CRXJS passes build.rollupOptions to Rollup 2.x. */
 export function crxjsVite8Compat(): Plugin {

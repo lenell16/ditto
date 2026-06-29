@@ -9,8 +9,9 @@ changes, update it here.
 
 - **Monorepo** — pnpm workspaces (`apps/*`, `packages/*`), Turbo for task
   orchestration, [Vite+](https://viteplus.dev) (`vp`) as the unified toolchain.
-  Node `>=22.12`, pnpm `10.33.2`. `vite`/`vitest` are pinned via the workspace
-  `catalog` to `@voidzero-dev/vite-plus-core` / `-test`.
+  Node `>=22.12`, pnpm `10.33.2`. `vite` is pinned via the workspace catalog to
+  `@voidzero-dev/vite-plus-core`; `vitest` is pinned to the Vitest version
+  bundled with the active Vite+ release.
 - **`apps/web`** — TanStack Start + TanStack Router (file-based routes, React
   19). AI via the Vercel AI SDK (`ai` v6, `@ai-sdk/anthropic`, `@ai-sdk/openai`,
   gateway). Durable, resumable chat via the Vercel Workflow SDK (`workflow`,

@@ -1,5 +1,11 @@
 import { defineConfig } from 'vite-plus'
 
+const skillIgnorePatterns = [
+  '.agents/skills/**',
+  '.claude/skills/**',
+  '.cursor/skills/**',
+]
+
 export default defineConfig({
   staged: {
     '*': 'vp check --fix',
@@ -22,15 +28,17 @@ export default defineConfig({
       '.vinxi/',
       'pnpm-lock.yaml',
       '**/routeTree.gen.ts',
-      '.agents/skills/**',
+      ...skillIgnorePatterns,
       'apps/web/src/components/ai-elements/**',
     ],
   },
   lint: {
     plugins: ['typescript', 'import', 'node'],
+    jsPlugins: [{ name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' }],
     options: { typeAware: true, typeCheck: true },
     rules: {
       'no-shadow': 'warn',
+      'vite-plus/prefer-vite-plus-imports': 'error',
 
       'typescript/array-type': [
         'error',
@@ -67,7 +75,7 @@ export default defineConfig({
       '**/.output/**',
       '**/routeTree.gen.ts',
       '**/vite.config.*.timestamp-*.*',
-      '.agents/skills/**',
+      ...skillIgnorePatterns,
       'apps/web/src/components/ai-elements/**',
     ],
   },

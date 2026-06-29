@@ -9,7 +9,6 @@
     "check": "vp check"
   },
   "devDependencies": {
-    "typescript": "~6.0.2",
-    "vitest": "catalog:"
+    "typescript": "~6.0.2"
   }
 }
