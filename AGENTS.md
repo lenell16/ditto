@@ -77,9 +77,15 @@ use: "dotenv#dotenvx"
 This project is using Vite+, a unified toolchain built on top of Vite, Rolldown, Vitest, tsdown, Oxlint, Oxfmt, and Vite Task. Vite+ wraps runtime management, package management, and frontend tooling in a single global CLI called `vp`. Vite+ is distinct from Vite, and it invokes Vite through `vp dev` and `vp build`. Run `vp help` to print a list of commands and `vp <command> --help` for information about a specific command.
 
 Prefer Vite+ commands when installing dependencies, running package scripts, or
-validating changes: use `vp install`, `vp run <script>`, `vp check`, `vp test`,
-`vp build`, and related `vp ...` commands when available. Use Vite+ workspace
-filtering for package-scoped work, such as `vp run --filter web check`.
+validating changes: use `vp install`, `vp run <script>`, `vp check`, `vp build`,
+and related `vp ...` commands when available. Use Vite+ workspace filtering for
+package-scoped work, such as `vp run --filter web check`.
+
+In this monorepo, run tests through package scripts so each package's own Vite
+config is respected: use `vp run -r test` for the full suite and
+`vp run --filter <package> test` for package-scoped tests. Package `test`
+scripts may call `vp test`, but avoid root `vp test` for the monorepo suite
+because it runs one Vitest process from the root config.
 
 Docs are local at `node_modules/vite-plus/docs` or online at https://viteplus.dev/guide/.
 
@@ -93,7 +99,7 @@ If the dev server is not running, start it to regenerate the tree while testing 
 
 - [ ] Run `vp install` after pulling remote changes and before getting started.
 - [ ] Run `vp run --filter web check` (not root `vp check`) to validate web app changes;
-- [ ] Run `vp test` to run tests.
+- [ ] Run `vp run -r test` to run tests.
 - [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 

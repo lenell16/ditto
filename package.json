@@ -6,7 +6,7 @@
     "build": "vp run -r build",
     "dev": "vp run --filter '{apps/*}' dev",
     "check": "vp check",
-    "test": "vp test",
+    "test": "vp run -r test",
     "prepare": "vp config"
   },
   "devDependencies": {

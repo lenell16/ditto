@@ -7,7 +7,8 @@
     "dev": "portless",
     "dev:vite": "vp dev",
     "preview": "vp preview",
-    "check": "vp check"
+    "check": "vp check",
+    "test": "vp test"
   },
   "portless": {
     "name": "memoria",

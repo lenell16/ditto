@@ -13,7 +13,8 @@ the smallest proof that would catch the bug we are worried about.
 The repo has the test runner, baseline foundation tests, and UI test
 dependencies installed.
 
-- `vp test` is wired at the root and runs the current test suite.
+- Root `vp run -r test` runs the current test suite through package scripts so
+  each package's Vite config is respected.
 - `apps/web` has `vitest`, `jsdom`, and Testing Library dependencies.
 - There is no Playwright config, Storybook setup, or CI workflow yet.
 - Use package checks for static verification:
@@ -30,10 +31,10 @@ vp run --filter @workspace/db check
 vp run --filter @workspace/ui check
 ```
 
-Use root `vp test` for the current automated suite:
+Use recursive package tests for the current automated suite:
 
 ```bash
-vp test
+vp run -r test
 ```
 
 ## Verification Philosophy
@@ -98,7 +99,7 @@ Default command order:
 
 1. Focused test command for the file or package being changed.
 2. Package check, such as `vp run --filter web check`.
-3. Root `vp test` once tests exist.
+3. Recursive package tests with `vp run -r test`.
 4. Browser/e2e smoke only when the changed behavior crosses browser, auth,
    database, extension, or workflow boundaries.
 

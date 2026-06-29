@@ -6,7 +6,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "check": "vp check"
+    "check": "vp check",
+    "test": "vp test"
   },
   "devDependencies": {
     "typescript": "~6.0.2"
