@@ -79,7 +79,9 @@ This project is using Vite+, a unified toolchain built on top of Vite, Rolldown,
 Prefer Vite+ commands when installing dependencies, running package scripts, or
 validating changes: use `vp install`, `vp run <script>`, `vp check`, `vp build`,
 and related `vp ...` commands when available. Use Vite+ workspace filtering for
-package-scoped work, such as `vp run --filter web check`.
+package-scoped work, such as `vp run --filter web check`. For package binaries
+you'd normally run with `npx`, `pnpm dlx`, or `pnpm exec`, use `vpx`, `vp dlx`,
+or `vp exec` instead — see https://viteplus.dev/guide/vpx.
 
 In this monorepo, run tests through package scripts so each package's own Vite
 config is respected: use `vp run -r test` for the full suite and
