@@ -1,11 +1,11 @@
-import { EMBED_TOKEN_KEY, isEmbedded } from '@/lib/embed/detect'
 import {
-  EMBED_MSG_AUTH_REQUIRED,
-  EMBED_MSG_HELLO,
-  EMBED_MSG_READY,
-  EMBED_SOURCE_EMBED,
+  createAuthRequiredMessage,
+  createHelloMessage,
+  createReadyMessage,
   isHostMessage,
-} from '@/lib/embed/protocol'
+} from '@workspace/embed-protocol'
+
+import { EMBED_TOKEN_KEY, isEmbedded } from '@/lib/embed/detect'
 import type { EmbedAuthStatus } from '@/lib/embed/status'
 import { getSession } from '@/server/auth'
 
@@ -78,10 +78,7 @@ export function installEmbedBridge(
 ): () => void {
   if (!isEmbedded()) return () => {}
 
-  window.parent.postMessage(
-    { source: EMBED_SOURCE_EMBED, type: EMBED_MSG_HELLO },
-    '*'
-  )
+  window.parent.postMessage(createHelloMessage(), '*')
 
   const handler = async (event: MessageEvent) => {
     if (!isAllowedHostOrigin(event.origin)) return
@@ -92,18 +89,12 @@ export function installEmbedBridge(
 
     const session = await getSession()
     if (!session) {
-      window.parent.postMessage(
-        { source: EMBED_SOURCE_EMBED, type: EMBED_MSG_AUTH_REQUIRED },
-        event.origin
-      )
+      window.parent.postMessage(createAuthRequiredMessage(), event.origin)
       options?.onAuthRequired?.()
       return
     }
 
-    window.parent.postMessage(
-      { source: EMBED_SOURCE_EMBED, type: EMBED_MSG_READY },
-      event.origin
-    )
+    window.parent.postMessage(createReadyMessage(), event.origin)
     options?.onReady?.()
   }
 

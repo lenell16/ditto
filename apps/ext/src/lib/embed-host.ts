@@ -1,13 +1,11 @@
 import {
   EMBED_MSG_AUTH_REQUIRED,
   EMBED_MSG_HELLO,
-  EMBED_MSG_INIT,
   EMBED_MSG_READY,
-  EMBED_MSG_TOKEN_REFRESH,
-  EMBED_SOURCE_EMBED,
-  EMBED_SOURCE_HOST,
+  createInitMessage,
+  createTokenRefreshMessage,
   isEmbedMessage,
-} from '@/lib/protocol'
+} from '@workspace/embed-protocol'
 
 export const STORAGE_TOKEN_KEY = 'ditto-auth-token'
 export const STORAGE_USER_KEY = 'ditto-auth-user'
@@ -23,16 +21,12 @@ export function installEmbedHost(
   options?: EmbedHostOptions
 ): () => void {
   const sendToken = (token: string) => {
-    iframe.contentWindow?.postMessage(
-      { source: EMBED_SOURCE_HOST, type: EMBED_MSG_INIT, token },
-      webAppOrigin
-    )
+    iframe.contentWindow?.postMessage(createInitMessage(token), webAppOrigin)
   }
 
   const handler = async (event: MessageEvent) => {
     if (event.origin !== webAppOrigin) return
     if (!isEmbedMessage(event.data)) return
-    if (event.data.source !== EMBED_SOURCE_EMBED) return
 
     switch (event.data.type) {
       case EMBED_MSG_HELLO: {
@@ -47,8 +41,10 @@ export function installEmbedHost(
       case EMBED_MSG_AUTH_REQUIRED:
         options?.onAuthRequired?.()
         break
-      default:
-        break
+      default: {
+        const exhaustive: never = event.data
+        return exhaustive
+      }
     }
   }
 
@@ -63,11 +59,7 @@ export function installEmbedHost(
     const token = changes[STORAGE_TOKEN_KEY].newValue as string | undefined
     if (!token) return
     iframe.contentWindow?.postMessage(
-      {
-        source: EMBED_SOURCE_HOST,
-        type: EMBED_MSG_TOKEN_REFRESH,
-        token,
-      },
+      createTokenRefreshMessage(token),
       webAppOrigin
     )
   }

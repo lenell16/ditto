@@ -32,6 +32,7 @@
     "@tanstack/router-plugin": "^1.132.0",
     "@workflow/ai": "^4.1.2",
     "@workspace/db": "workspace:*",
+    "@workspace/embed-protocol": "workspace:*",
     "@workspace/ui": "workspace:*",
     "ai": "^6.0.197",
     "better-auth": "^1.6.20",

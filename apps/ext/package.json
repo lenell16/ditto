@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "@workspace/embed-protocol": "workspace:*",
     "@workspace/ui": "workspace:*",
     "lucide-react": "^1.14.0",
     "react": "^19.2.4",
@@ -27,6 +28,7 @@
     "typescript": "~6.0.2",
     "vite": "catalog:",
     "vite-plugin-zip-pack": "^1.2.4",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   }
 }

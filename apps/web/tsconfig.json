@@ -26,6 +26,9 @@
       "@/*": ["./src/*"],
       "@workspace/db": ["../../packages/db/src/index.ts"],
       "@workspace/db/*": ["../../packages/db/src/*"],
+      "@workspace/embed-protocol": [
+        "../../packages/embed-protocol/src/index.ts"
+      ],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     }
   }
