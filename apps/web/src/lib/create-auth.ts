@@ -5,7 +5,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { bearer } from 'better-auth/plugins'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
-type AuthDb = Awaited<ReturnType<typeof getDb>>
+export type AuthDb = Awaited<ReturnType<typeof getDb>>
 
 function buildTrustedOrigins(): Array<string> {
   const origins: Array<string> = []
@@ -27,12 +27,18 @@ function buildTrustedOrigins(): Array<string> {
 
 export function createAuth(db: AuthDb) {
   return betterAuth({
+    ...createAuthBaseConfig(db),
+    plugins: [bearer(), tanstackStartCookies()],
+  })
+}
+
+export function createAuthBaseConfig(db: AuthDb) {
+  return {
     database: drizzleAdapter(db, {
       provider: 'pg',
       schema: { user, session, account, verification },
     }),
     emailAndPassword: { enabled: true },
     trustedOrigins: buildTrustedOrigins(),
-    plugins: [bearer(), tanstackStartCookies()],
-  })
+  }
 }
