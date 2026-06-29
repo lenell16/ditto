@@ -1,11 +1,11 @@
 ---
 name: browser-verification
-description: Browser verification for the Ditto monorepo — extends agent-browser with local Memoria dev setup (vp dev, Portless, memoria.localhost, check/test). Use when verifying UI, routes, or interactions in apps/web.
+description: Browser verification for the Ditto monorepo — extends browser-verification-workflow with local Memoria dev setup (vp dev, Portless, memoria.localhost, check/test). Use when verifying UI, routes, or interactions in apps/web.
 ---
 
 # Browser Verification (Ditto)
 
-Extends the **`agent-browser`** skill with Ditto-specific setup. Follow `agent-browser` for isolated/headed sessions, interaction, evidence capture, triage, and reporting. This skill adds only what is unique to this repo.
+Ditto-specific wrapper for browser verification. Load `agent-browser skills get core`, then follow `browser-verification-workflow` for isolated/headed sessions, state mode, evidence capture, triage, and reporting. This skill adds only what is unique to this repo.
 
 ## Repo Details
 
@@ -18,6 +18,11 @@ Extends the **`agent-browser`** skill with Ditto-specific setup. Follow `agent-b
 | Routes | `apps/web/src/routes/` — `routeTree.gen.ts` auto-updates when dev server is running |
 | Evidence dir | `tmp/ditto-browser-evidence/` |
 
+Canonical local targets:
+
+- App root: `https://memoria.localhost/`
+- Specific route: `https://memoria.localhost/<route>`
+
 ## Workflow
 
 1. Identify the affected route, user flow, and expected behavior.
@@ -26,7 +31,7 @@ Extends the **`agent-browser`** skill with Ditto-specific setup. Follow `agent-b
 4. Start or reuse `vp run --filter web dev` (runs Portless for `apps/web`). On `EMFILE`, retry: `ulimit -n 65536; vp run --filter web dev`.
 5. Confirm dev output prints `-> https://memoria.localhost`.
 6. If Portless shows 404 for `memoria.localhost`, the proxy is up but the app is not registered — restart dev and wait for the URL line above.
-7. Follow **`agent-browser`** default mode: use a clean worktree-scoped isolated session. Add `--headed` only when the user says `headed`, `visible`, `watch`, or asks to see the browser. Use `--profile Default`, an app profile, or `--restore` only when the task needs authenticated/persona-specific state.
+7. Follow `browser-verification-workflow` default mode: use a clean worktree-scoped isolated session. Add `--headed` only when the user says `headed`, `visible`, `watch`, or asks to see the browser. Use `--profile Default`, an app profile, or `--restore` only when the task needs authenticated/persona-specific state.
 
 ```bash
 SESSION="$(agent-browser session id --scope worktree --prefix ditto)"
@@ -35,7 +40,7 @@ agent-browser --session "$SESSION" wait --load networkidle
 agent-browser --session "$SESSION" snapshot -i -c
 ```
 
-For visible verification:
+For visible verification, keep the same URL and session prefix:
 
 ```bash
 SESSION="$(agent-browser session id --scope worktree --prefix ditto)"
@@ -44,7 +49,7 @@ agent-browser --session "$SESSION" wait --load networkidle
 agent-browser --session "$SESSION" snapshot -i -c
 ```
 
-For a Ditto-specific authenticated browser identity, initialize or reuse an app profile only when needed:
+For a Ditto-specific authenticated browser identity, initialize or reuse an app profile only when the flow needs durable Ditto auth:
 
 ```bash
 APP_PROFILE="$HOME/.agent-browser-profiles/ditto"
@@ -53,7 +58,7 @@ agent-browser --session "$SESSION" --profile "$APP_PROFILE" open https://memoria
 ```
 
 8. Exercise the flow; capture evidence to `tmp/ditto-browser-evidence/`; also check server logs from the dev terminal. If blocked in either headed or headless mode, capture snapshot, screenshot, console, and errors before retrying or switching mode.
-9. Return compact verdict per `agent-browser` report format.
+9. Return compact verdict per `browser-verification-workflow` report format.
 
 ```bash
 mkdir -p tmp/ditto-browser-evidence
@@ -85,14 +90,15 @@ Context:
 - Changed files: <files>
 
 Workflow:
-1. Reuse healthy `vp run --filter web dev` if present; else start it.
-2. Run `vp run --filter web check` / `test` when practical.
-3. Follow `agent-browser` skill default: clean isolated worktree-scoped session.
-4. Add `--headed` only if the user asks for `headed`, `visible`, or wants to watch the browser.
-5. Use `--profile Default`, `~/.agent-browser-profiles/ditto`, or `--restore` only for authenticated/persona-specific scenarios.
-6. Open https://memoria.localhost/<route> directly in that session.
-7. Capture screenshots to tmp/ditto-browser-evidence/; check console, network, server logs.
-8. If blocked, capture snapshot/screenshot/console/errors before retrying or switching mode.
+1. Load `agent-browser skills get core`.
+2. Reuse healthy `vp run --filter web dev` if present; else start it.
+3. Run `vp run --filter web check` / `test` when practical.
+4. Follow `browser-verification-workflow` skill default: clean isolated worktree-scoped session.
+5. Add `--headed` only if the user asks for `headed`, `visible`, or wants to watch the browser.
+6. Use `--profile Default`, `~/.agent-browser-profiles/ditto`, or `--restore` only for authenticated/persona-specific scenarios.
+7. Open `https://memoria.localhost/<route>` directly in that session.
+8. Capture screenshots to `tmp/ditto-browser-evidence/`; check console, network, server logs.
+9. If blocked, capture snapshot/screenshot/console/errors before retrying or switching mode.
 
 Return: Verdict (PASS/FAIL/BLOCKED), mode used (headless/headed, clean/profile/restore), scope tested, commands run, browser actions, evidence paths, console/network summary, findings, repro steps if failing, suspected files if failing.
 ```
