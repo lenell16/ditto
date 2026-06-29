@@ -103,6 +103,14 @@ If the dev server is not running, start it to regenerate the tree while testing 
 - [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
+## Browser Verification
+
+For UI or route changes in `apps/web`, use the **`browser-verification`** project
+skill — it extends **`agent-browser`** with Ditto dev setup (Portless,
+`memoria.localhost`, `vp check`/`test`). For all other browser work, use
+**`agent-browser`** directly. See those skills for connect, evidence capture,
+and reporting.
+
 <!--VITE PLUS END-->
 
 <!--ERROR HANDLING START-->
