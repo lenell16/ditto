@@ -108,10 +108,10 @@ If the dev server is not running, start it to regenerate the tree while testing 
 ## Browser Verification
 
 For UI or route changes in `apps/web`, use the **`browser-verification`** project
-skill — it extends **`agent-browser`** with Ditto dev setup (Portless,
-`memoria.localhost`, `vp check`/`test`). For all other browser work, use
-**`agent-browser`** directly. See those skills for connect, evidence capture,
-and reporting.
+skill — it extends **`browser-verification-workflow`** with Ditto dev setup
+(Portless, `memoria.localhost`, `vp check`/`test`). For other browser work in
+this repo, use **`browser-verification-workflow`** or **`agent-browser`**
+directly. See those skills for connect, evidence capture, and reporting.
 
 <!--VITE PLUS END-->
 
