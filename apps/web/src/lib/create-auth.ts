@@ -18,9 +18,17 @@ function buildTrustedOrigins(): Array<string> {
         .filter(Boolean)
     )
   }
-  // Extension popup sign-in sends Origin: chrome-extension://<id>
   if (process.env.NODE_ENV !== 'production') {
+    // Extension popup sign-in sends Origin: chrome-extension://<id>
     origins.push('chrome-extension://*')
+    // Portless injects PORTLESS_URL with the exact dev origin it serves
+    // (e.g. https://memoria.localhost:1355, or a worktree-prefixed subdomain).
+    // Trust it dynamically so local browser auth works regardless of the
+    // proxy port, without hardcoding it or matching BETTER_AUTH_URL exactly.
+    const portlessUrl = process.env.PORTLESS_URL?.trim()
+    if (portlessUrl) {
+      origins.push(new URL(portlessUrl).origin)
+    }
   }
   return origins
 }

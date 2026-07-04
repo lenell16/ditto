@@ -28,6 +28,30 @@ MEMORIA="$(portless get memoria)"
 # Linked worktree on branch fix-ui: https://fix-ui.memoria.localhost
 ```
 
+## Dev Environment Gotchas
+
+Preflight before any browser flow — going in "guns blazing" wastes a lot of time:
+
+1. **Start the Portless proxy before `vp run --filter web dev`.** If the proxy isn't already running, `vp dev` tries to bind `:443` with `--https`, which needs `sudo`; a non-TTY agent shell can't answer the sudo prompt, so the whole dev command aborts and the server never comes up (`curl /login` → `000`). Start it once:
+
+```bash
+portless proxy start -p 1355   # unprivileged, no sudo → URLs become https://memoria.localhost:1355
+# or, for a clean :443 origin (matches BETTER_AUTH_URL): sudo portless proxy start --https  (run in a real terminal)
+```
+
+Then confirm the app actually serves, not just that a route is registered: `curl -sk -o /dev/null -w '%{http_code}' "$(portless get memoria)/login"` must be `200`. A registered alias in `portless list` can still return `000`/`404` if the app isn't up.
+
+2. **pglite `RuntimeError: Aborted()` = corrupted local DB.** If `/login` 500s and/or `seed:dev-user` crashes with a pglite WASM `Aborted()`, the `.data/pglite` dir (gitignored, per-worktree) is corrupted — usually from killed/stale dev servers. A WASM abort also poisons the Node process, so the dev server can't recover until restarted. Recover:
+
+```bash
+# stop the dev server (and anything holding the DB) first, then:
+mv .data/pglite ".data/pglite.corrupt-$(date +%Y%m%d-%H%M%S)"   # reversible, not a delete
+vp run --filter web seed:dev-user                                # recreates + migrates + seeds dev user
+# then restart the dev server — the poisoned process cannot reuse pglite
+```
+
+3. **Auth origin is port-sensitive.** better-auth returns `403 {"code":"INVALID_ORIGIN"}` when the browser origin isn't trusted. `apps/web/.env` sets `BETTER_AUTH_URL="https://memoria.localhost"` (no port), so on a `:1355` proxy the origin mismatches. `create-auth.ts` trusts `process.env.PORTLESS_URL` in dev (Portless injects the exact served origin), so login works on any port/worktree subdomain without sudo. If you hit `INVALID_ORIGIN`, confirm the dev server's env has `PORTLESS_URL`.
+
 ## Dev Browser Auth
 
 Local-only credentials for pglite dev databases (not production secrets):
@@ -59,25 +83,27 @@ echo "local-dev-password" | agent-browser auth save ditto \
   --submit-selector 'button[type="submit"]'
 ```
 
-### Authenticated browser session
+### Login (proven recipe)
 
-Use auth vault + worktree-scoped `--restore` (not a shared Chrome profile — cookies are origin-specific per Portless subdomain):
+The login form is server-rendered then hydrated, so wait for React to attach before filling/submitting — see "Waiting for Readiness (Hydration)" in `browser-verification-workflow`. Do **not** use `wait --load networkidle` here: the Memoria dev server holds a Vite HMR WebSocket and a devtools console-pipe SSE open, so it never goes idle and the wait burns its full ~25s timeout. Direct fill + submit is reliable; the `auth login` vault path has been flaky against this form.
 
 ```bash
 MEMORIA="$(portless get memoria)"
-SESSION="$(agent-browser session id --scope worktree --prefix ditto)"
+SESSION="$(agent-browser session id --scope worktree --prefix ditto-login)"
+HYDRATED="Object.keys(document.querySelector('#email')||{}).some(k=>k.startsWith('__reactFiber\$')||k.startsWith('__reactProps\$'))"
 
 vp run --filter web seed:dev-user
 
-agent-browser --session "$SESSION" --restore auth login ditto \
-  --url "${MEMORIA}/login"
-
-agent-browser --session "$SESSION" --restore open "${MEMORIA}/<route>"
-agent-browser --session "$SESSION" wait --load networkidle
-agent-browser --session "$SESSION" snapshot -i -c
+agent-browser --session "$SESSION" --headed open "${MEMORIA}/login"
+agent-browser --session "$SESSION" wait "#email"
+agent-browser --session "$SESSION" wait --fn "$HYDRATED"        # ~300ms; NOT networkidle (~25s timeout)
+agent-browser --session "$SESSION" fill "#email" "agent@memoria.local"
+agent-browser --session "$SESSION" fill "#password" "local-dev-password"
+agent-browser --session "$SESSION" click 'button[type="submit"]'
+agent-browser --session "$SESSION" wait --text "Project ready"  # authenticated home; unambiguous success
 ```
 
-Use `--profile Default` only when the user asks for their personal Chrome identity (OAuth/SSO). Do not use `~/.agent-browser-profiles/ditto` for cross-worktree auth.
+Drop `--headed` for headless runs. Full flow (open → home) is ~2s. For onward authenticated navigation, reuse the same `$SESSION` with `--restore`. Use `--profile Default` only when the user asks for their personal Chrome identity (OAuth/SSO); do not use `~/.agent-browser-profiles/ditto` for cross-worktree auth.
 
 ## Workflow
 
@@ -93,7 +119,7 @@ Use `--profile Default` only when the user asks for their personal Chrome identi
 MEMORIA="$(portless get memoria)"
 SESSION="$(agent-browser session id --scope worktree --prefix ditto)"
 agent-browser --session "$SESSION" open "${MEMORIA}/<route>"
-agent-browser --session "$SESSION" wait --load networkidle
+agent-browser --session "$SESSION" wait --fn "document.readyState==='complete'"  # files loaded; NOT networkidle (never idle on Vite dev)
 agent-browser --session "$SESSION" snapshot -i -c
 ```
 
@@ -103,7 +129,7 @@ For visible verification, keep the same URL and session prefix:
 MEMORIA="$(portless get memoria)"
 SESSION="$(agent-browser session id --scope worktree --prefix ditto)"
 agent-browser --session "$SESSION" --headed open "${MEMORIA}/<route>"
-agent-browser --session "$SESSION" wait --load networkidle
+agent-browser --session "$SESSION" wait --fn "document.readyState==='complete'"  # files loaded; NOT networkidle (never idle on Vite dev)
 agent-browser --session "$SESSION" snapshot -i -c
 ```
 
