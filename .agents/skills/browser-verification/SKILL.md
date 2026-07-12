@@ -1,182 +1,140 @@
 ---
 name: browser-verification
-description: Browser verification for the Ditto monorepo — extends browser-verification-workflow with local Memoria dev setup (vp dev, Portless, memoria.localhost, check/test). Use when verifying UI, routes, or interactions in apps/web.
+description: Verify UI, routes, authentication, and browser interactions in Ditto's apps/web using the project's Vite+, Portless, PGlite, and dev-user setup. Use for Memoria browser smoke tests, visual checks, bug reproduction, screenshots, console/network diagnostics, repeated browser loops, and end-of-task PASS/FAIL/BLOCKED reports. Extends browser-verification-workflow and selects Codex Browser, Playwright CLI, Chrome, Computer Use, or Agent Browser according to the scenario.
 ---
 
 # Browser Verification (Ditto)
 
-Ditto-specific wrapper for browser verification. Load `agent-browser skills get core`, then follow `browser-verification-workflow` for isolated/headed sessions, state mode, evidence capture, triage, and reporting. This skill adds only what is unique to this repo.
+Load and follow `browser-verification-workflow`. This wrapper supplies only Ditto-specific setup, recovery, authentication, and validation.
 
-## Repo Details
+## Project map
 
 | Item | Value |
-|------|-------|
+| --- | --- |
 | App package | `apps/web` |
 | Dev command | `vp run --filter web dev` |
-| Portless name | `memoria` (URL from `portless get memoria`) |
-| Dev browser user seed | `vp run --filter web seed:dev-user` |
-| Cheap checks | `vp run --filter web check`, `vp run --filter web test` |
-| Routes | `apps/web/src/routes/` — `routeTree.gen.ts` auto-updates when dev server is running |
-| Evidence dir | `tmp/ditto-browser-evidence/` |
+| App URL | Resolve with `portless get memoria`; never hardcode it |
+| Dev-user seed | `vp run --filter web seed:dev-user` |
+| Cheap validation | `vp run --filter web check`, `vp run --filter web test` |
+| Full tests | `vp run -r test` |
+| Routes | `apps/web/src/routes/` |
+| Evidence | `tmp/ditto-browser-evidence/` |
 | Auth constants | `apps/web/src/dev/browser-auth.ts` |
 
-Resolve the app URL at runtime — do not hardcode `https://memoria.localhost` in linked worktrees:
+Use Vite+ commands; do not replace them with raw package-manager equivalents.
+
+## Preflight
+
+1. Inspect existing task terminal output and reuse a healthy `vp run --filter web dev` process.
+2. Resolve `MEMORIA="$(portless get memoria)"`.
+3. Confirm the app serves: `curl -sk -o /dev/null -w '%{http_code}' "$MEMORIA/login"` must return `200`.
+4. If the app is unavailable, start the Portless proxy before the dev server when necessary, then run `vp run --filter web dev`.
+5. Confirm dev output shows the resolved Portless URL.
+6. Run `vp run --filter web check` and the relevant package tests when practical for the change under verification.
+
+Do not start duplicate dev servers. A registered Portless alias can still return `000` or `404` when the app process is absent.
+
+### Portless
+
+The main worktree normally resolves to `https://memoria.localhost`; linked worktrees receive a prefixed hostname. Always use the runtime-resolved URL.
+
+If the proxy is not running, start it before `vp dev`:
 
 ```bash
-MEMORIA="$(portless get memoria)"
-# Main worktree: https://memoria.localhost
-# Linked worktree on branch fix-ui: https://fix-ui.memoria.localhost
+portless proxy start -p 1355
 ```
 
-## Dev Environment Gotchas
+An existing privileged `:443` proxy is also valid. Do not attempt interactive `sudo` from a non-interactive shell.
 
-Preflight before any browser flow — going in "guns blazing" wastes a lot of time:
+If login returns `INVALID_ORIGIN`, confirm the dev process received the exact `PORTLESS_URL`. Better Auth trusts that value in development.
 
-1. **Start the Portless proxy before `vp run --filter web dev`.** If the proxy isn't already running, `vp dev` tries to bind `:443` with `--https`, which needs `sudo`; a non-TTY agent shell can't answer the sudo prompt, so the whole dev command aborts and the server never comes up (`curl /login` → `000`). Start it once:
+### PGlite recovery
 
-```bash
-portless proxy start -p 1355   # unprivileged, no sudo → URLs become https://memoria.localhost:1355
-# or, for a clean :443 origin (matches BETTER_AUTH_URL): sudo portless proxy start --https  (run in a real terminal)
-```
+`RuntimeError: Aborted()` from PGlite usually means the worktree-local database is corrupted and the Node process is poisoned.
 
-Then confirm the app actually serves, not just that a route is registered: `curl -sk -o /dev/null -w '%{http_code}' "$(portless get memoria)/login"` must be `200`. A registered alias in `portless list` can still return `000`/`404` if the app isn't up.
+1. Stop the process using the database.
+2. Move `.data/pglite` to a timestamped `.data/pglite.corrupt-*` path; do not delete it.
+3. Run `vp run --filter web seed:dev-user`.
+4. Restart the dev server.
 
-2. **pglite `RuntimeError: Aborted()` = corrupted local DB.** If `/login` 500s and/or `seed:dev-user` crashes with a pglite WASM `Aborted()`, the `.data/pglite` dir (gitignored, per-worktree) is corrupted — usually from killed/stale dev servers. A WASM abort also poisons the Node process, so the dev server can't recover until restarted. Recover:
+## Authentication
 
-```bash
-# stop the dev server (and anything holding the DB) first, then:
-mv .data/pglite ".data/pglite.corrupt-$(date +%Y%m%d-%H%M%S)"   # reversible, not a delete
-vp run --filter web seed:dev-user                                # recreates + migrates + seeds dev user
-# then restart the dev server — the poisoned process cannot reuse pglite
-```
-
-3. **Auth origin is port-sensitive.** better-auth returns `403 {"code":"INVALID_ORIGIN"}` when the browser origin isn't trusted. `apps/web/.env` sets `BETTER_AUTH_URL="https://memoria.localhost"` (no port), so on a `:1355` proxy the origin mismatches. `create-auth.ts` trusts `process.env.PORTLESS_URL` in dev (Portless injects the exact served origin), so login works on any port/worktree subdomain without sudo. If you hit `INVALID_ORIGIN`, confirm the dev server's env has `PORTLESS_URL`.
-
-## Dev Browser Auth
-
-Local-only credentials for pglite dev databases (not production secrets):
+Local development credentials are defined in `apps/web/src/dev/browser-auth.ts`:
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | Email | `agent@memoria.local` |
 | Password | `local-dev-password` |
-| Vault profile | `ditto` |
-| Login selectors | `#email`, `#password`, `button[type="submit"]` |
+| Email selector | `#email` |
+| Password selector | `#password` |
+| Submit selector | `button[type="submit"]` |
 
-Each worktree has its own `.data/pglite` database. Seed the dev user once per worktree before authenticated browser flows:
+Seed once per worktree before authenticated flows:
 
 ```bash
 vp run --filter web seed:dev-user
 ```
 
-### One-time Agent Browser vault setup (per machine)
+The login form is server-rendered. Wait for React hydration before submitting. Do not use `networkidle`; Vite HMR and the devtools console pipe keep connections open.
 
-Save credentials and selectors locally. The saved URL is a placeholder; always override with `portless get memoria` at login time.
+A suitable React readiness check is:
 
-```bash
-echo "local-dev-password" | agent-browser auth save ditto \
-  --url "https://memoria.localhost/login" \
-  --username "agent@memoria.local" \
-  --password-stdin \
-  --username-selector "#email" \
-  --password-selector "#password" \
-  --submit-selector 'button[type="submit"]'
+```js
+Object.keys(document.querySelector('#email') || {}).some(
+  (key) => key.startsWith('__reactFiber$') || key.startsWith('__reactProps$'),
+)
 ```
 
-### Login (proven recipe)
+Confirm successful authentication with the unambiguous home signal `Project ready!`.
 
-The login form is server-rendered then hydrated, so wait for React to attach before filling/submitting — see "Waiting for Readiness (Hydration)" in `browser-verification-workflow`. Do **not** use `wait --load networkidle` here: the Memoria dev server holds a Vite HMR WebSocket and a devtools console-pipe SSE open, so it never goes idle and the wait burns its full ~25s timeout. Direct fill + submit is reliable; the `auth login` vault path has been flaky against this form.
+### Browser state
 
-```bash
-MEMORIA="$(portless get memoria)"
-SESSION="$(agent-browser session id --scope worktree --prefix ditto-login)"
-HYDRATED="Object.keys(document.querySelector('#email')||{}).some(k=>k.startsWith('__reactFiber\$')||k.startsWith('__reactProps\$'))"
+- Use the in-app Browser's current state for ordinary authenticated verification when shared state is acceptable.
+- Use an isolated Playwright CLI scenario for clean login/logout, multiple users, or conflicting storage.
+- Use Chrome only when the user's real Chrome identity is part of the test.
+- Agent Browser's `ditto` vault remains a portable fallback outside Codex; do not require it for Codex-native verification.
 
-vp run --filter web seed:dev-user
+Worktree URLs isolate app instances, not necessarily browser cookies. Separate tabs do not create separate authentication contexts.
 
-agent-browser --session "$SESSION" --headed open "${MEMORIA}/login"
-agent-browser --session "$SESSION" wait "#email"
-agent-browser --session "$SESSION" wait --fn "$HYDRATED"        # ~300ms; NOT networkidle (~25s timeout)
-agent-browser --session "$SESSION" fill "#email" "agent@memoria.local"
-agent-browser --session "$SESSION" fill "#password" "local-dev-password"
-agent-browser --session "$SESSION" click 'button[type="submit"]'
-agent-browser --session "$SESSION" wait --text "Project ready"  # authenticated home; unambiguous success
+## Ditto verification loop
+
+1. Identify the route, scenario, expected behavior, and success signal.
+2. Complete preflight and seed the dev user when required.
+3. Let `browser-verification-workflow` select the surface and scenario state.
+4. Open `${MEMORIA}/<route>` directly.
+5. Wait for target hydration before interactions.
+6. Exercise the flow and capture evidence in `tmp/ditto-browser-evidence/`.
+7. Inspect browser console warnings/errors. Add network or trace evidence for request, timing, or intermittent failures.
+8. Check dev-server logs for server-side failures.
+9. Return the standard verdict and embed decisive screenshots.
+
+For Codex in-app Browser verification, leave the final tab open as a deliverable when it helps the user review or continue the flow. Clean up login, duplicate, or intermediate tabs.
+
+For repeat loops, use Playwright CLI with a scenario name that includes the worktree and feature when useful, for example `ditto-main-chat-streaming`. Do not commit a regression test unless requested or clearly in scope.
+
+## Route tree
+
+When the dev server is running, adding or renaming files under `apps/web/src/routes/` updates `routeTree.gen.ts` automatically. Otherwise start the server or run a build. Commit the generated route tree when it changes.
+
+## Evidence and report
+
+Prefer viewport screenshots with stable names:
+
+```text
+tmp/ditto-browser-evidence/
+  <scenario>-before.png
+  <scenario>-after.png
+  <scenario>-failure.png
 ```
 
-Drop `--headed` for headless runs. Full flow (open → home) is ~2s. For onward authenticated navigation, reuse the same `$SESSION` with `--restore`. Use `--profile Default` only when the user asks for their personal Chrome identity (OAuth/SSO); do not use `~/.agent-browser-profiles/ditto` for cross-worktree auth.
+Capture `before` only when comparison matters; always capture the decisive final state for visual/interaction verification. Verify screenshots render correctly before reporting them.
 
-## Workflow
+Include:
 
-1. Identify the affected route, user flow, and expected behavior.
-2. Check existing terminals — reuse a healthy `vp run --filter web dev` process; do not start duplicates unless stale or failed.
-3. Run cheap checks when practical: `vp run --filter web check`, `vp run --filter web test`.
-4. Start or reuse `vp run --filter web dev` (runs Portless for `apps/web`). On `EMFILE`, retry: `ulimit -n 65536; vp run --filter web dev`.
-5. Set `MEMORIA="$(portless get memoria)"` and confirm dev output prints `-> ${MEMORIA}` (or the equivalent worktree-prefixed URL).
-6. If Portless shows 404, the proxy is up but the app is not registered — restart dev and wait for the URL line above.
-7. Follow `browser-verification-workflow` default mode: use a clean worktree-scoped isolated session. Add `--headed` only when the user says `headed`, `visible`, `watch`, or asks to see the browser. Use auth vault + `--restore` only when the flow needs authenticated state (see Dev Browser Auth above).
-
-```bash
-MEMORIA="$(portless get memoria)"
-SESSION="$(agent-browser session id --scope worktree --prefix ditto)"
-agent-browser --session "$SESSION" open "${MEMORIA}/<route>"
-agent-browser --session "$SESSION" wait --fn "document.readyState==='complete'"  # files loaded; NOT networkidle (never idle on Vite dev)
-agent-browser --session "$SESSION" snapshot -i -c
-```
-
-For visible verification, keep the same URL and session prefix:
-
-```bash
-MEMORIA="$(portless get memoria)"
-SESSION="$(agent-browser session id --scope worktree --prefix ditto)"
-agent-browser --session "$SESSION" --headed open "${MEMORIA}/<route>"
-agent-browser --session "$SESSION" wait --fn "document.readyState==='complete'"  # files loaded; NOT networkidle (never idle on Vite dev)
-agent-browser --session "$SESSION" snapshot -i -c
-```
-
-8. Exercise the flow; capture evidence to `tmp/ditto-browser-evidence/`; also check server logs from the dev terminal. If blocked in either headed or headless mode, capture snapshot, screenshot, console, and errors before retrying or switching mode.
-9. Return compact verdict per `browser-verification-workflow` report format.
-
-```bash
-mkdir -p tmp/ditto-browser-evidence
-agent-browser --session "$SESSION" screenshot tmp/ditto-browser-evidence/<name>.png
-agent-browser --session "$SESSION" console
-agent-browser --session "$SESSION" errors
-```
-
-## Route Tree Note
-
-When the dev server is already running, adding or renaming files under `apps/web/src/routes/` updates `routeTree.gen.ts` automatically. If dev is not running, start it or run a build to regenerate. Commit `routeTree.gen.ts` when it changes.
-
-## When To Delegate
-
-More than one or two browser actions → subagent. Template below.
-
-## Subagent Prompt Template
-
-```markdown
-You are the Ditto UI Verification Subagent.
-
-Goal: Verify or reproduce: <behavior, bug, or demo flow>
-
-Context:
-- Workspace: /Users/alonzothomas/Developer/personal/ditto
-- App: apps/web at $(portless get memoria)
-- Routes: <routes>
-- Expected behavior: <expected behavior>
-- Changed files: <files>
-- Dev browser auth: agent@memoria.local / local-dev-password (see apps/web/src/dev/browser-auth.ts)
-
-Workflow:
-1. Load `agent-browser skills get core`.
-2. Reuse healthy `vp run --filter web dev` if present; else start it.
-3. Run `vp run --filter web check` / `test` when practical.
-4. Set `MEMORIA="$(portless get memoria)"`.
-5. Follow `browser-verification-workflow` skill default: clean isolated worktree-scoped session.
-6. Add `--headed` only if the user asks for `headed`, `visible`, or wants to watch the browser.
-7. For authenticated flows: run `vp run --filter web seed:dev-user`, then `agent-browser auth login ditto --url "${MEMORIA}/login"` with `--restore` on the worktree session.
-8. Open `"${MEMORIA}/<route>"` directly in that session.
-9. Capture screenshots to `tmp/ditto-browser-evidence/`; check console, network, server logs.
-10. If blocked, capture snapshot/screenshot/console/errors before retrying or switching mode.
-
-Return: Verdict (PASS/FAIL/BLOCKED), mode used (headless/headed, clean/auth-restore), scope tested, commands run, browser actions, evidence paths, console/network summary, findings, repro steps if failing, suspected files if failing.
-```
+- PASS, FAIL, or BLOCKED
+- Surface and state mode
+- Resolved Memoria environment when relevant
+- Flow and strongest assertions
+- Console/network/server-log summary
+- Embedded decisive screenshots and links to traces or extra artifacts
+- Findings and concise repro steps when failing

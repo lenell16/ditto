@@ -110,8 +110,11 @@ If the dev server is not running, start it to regenerate the tree while testing 
 For UI or route changes in `apps/web`, use the **`browser-verification`** project
 skill — it extends **`browser-verification-workflow`** with Ditto dev setup
 (Portless, `memoria.localhost`, `vp check`/`test`). For other browser work in
-this repo, use **`browser-verification-workflow`** or **`agent-browser`**
-directly. See those skills for connect, evidence capture, and reporting.
+this repo, use **`browser-verification-workflow`**. It selects Codex's in-app
+Browser by default, Playwright CLI for isolated/repeated/trace-heavy work,
+Chrome for the user's existing browser identity, Computer Use for native UI,
+and Agent Browser as a portable fallback. See those skills for state isolation,
+evidence capture, and reporting.
 
 <!--VITE PLUS END-->
 
