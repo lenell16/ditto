@@ -190,8 +190,10 @@ those; the notes below only cover non-obvious gotchas.
   seeding, or just create the account via the login page's "Create one" link
   (dev creds: `agent@memoria.local` / `local-dev-password`).
 
-- **AI chat needs a provider key.** Auth, memories, SSR, and the demo routes
-  (forms, data grid) work with no secrets. The AI chat routes only produce
-  responses when one of `AI_GATEWAY_API_KEY` / `ANTHROPIC_API_KEY` /
-  `OPENAI_API_KEY` is set (provider via `AI_PROVIDER`, default `gateway`); see
-  `apps/web/src/lib/ai.ts`. Leave `DATABASE_URL` unset to use local pglite.
+- **AI chat provider.** The AI chat routes are driven by `AI_GATEWAY_API_KEY`,
+  which is provisioned as an environment secret (auto-injected each session), so
+  chat works out of the box — nothing to request or configure. Provider is
+  selected by `AI_PROVIDER` (default `gateway`); `ANTHROPIC_API_KEY` /
+  `OPENAI_API_KEY` are the alternatives. See `apps/web/src/lib/ai.ts`. Auth,
+  memories, SSR, and the demo routes (forms, data grid) need no secrets. Leave
+  `DATABASE_URL` unset to use local pglite.
