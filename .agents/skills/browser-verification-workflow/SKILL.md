@@ -1,6 +1,6 @@
 ---
 name: browser-verification-workflow
-description: Verify browser UI, reproduce web bugs, exercise user flows, and capture reviewable evidence across Codex in-app Browser, Chrome, Playwright CLI, Computer Use, or Agent Browser. Use for local or remote browser testing, visual checks, authenticated flows, console/network inspection, repeated verification loops, screenshots, traces, and PASS/FAIL/BLOCKED reports.
+description: Verify browser UI, reproduce web bugs, exercise user flows, and capture reviewable evidence across Codex in-app Browser, Chrome, Playwright CLI, Computer Use, or Agent Browser. Use for local or remote browser testing, visual checks, authenticated flows, console/network inspection, repeated verification loops, screenshots, video demos, traces, and PASS/FAIL/BLOCKED reports.
 ---
 
 # Browser Verification Workflow
@@ -27,6 +27,7 @@ Do not ask the user to choose a surface when the request makes the choice immate
 - "Use my existing account" -> Chrome.
 - "Test the native file picker" -> Computer Use or Chrome if its supported browser API covers the picker.
 - "Capture a trace or inspect requests" -> Playwright CLI, or in-app Browser with CDP when that capability is enabled and appropriate.
+- "Make a polished video demo of this flow" -> load `demo-making`, then use its recording and presentation workflow.
 
 ## Separate environment from browser state
 
@@ -84,6 +85,10 @@ Capture only evidence that helps prove the verdict:
 - Prefer viewport screenshots. Use full-page screenshots only for genuinely scrollable pages and verify the rendered result.
 - Use stable scenario/state names such as `chat-empty.png`, `chat-response.png`, or `login-failure.png`.
 - Embed one or two decisive screenshots in the final response; link traces, videos, logs, or extra screenshots.
+- In Cursor, first place screenshots in the repository evidence directory, then embed them with the full absolute filesystem path:
+  `![Chat response](/absolute/path/to/tmp/browser-evidence/chat-response.png)`.
+  Do not use a relative path or add a `file://` prefix. If a browser tool returns a temporary screenshot path, copy the file into the evidence directory before embedding it.
+- When a user requests video or the behavior is best demonstrated as a sequence, load `demo-making`. Keep browser verification responsible for the assertions and verdict; let the demo skill own recording, pacing, conversion, validation, and chat presentation.
 
 Inspect console errors and warnings for ordinary UI verification. Add network inspection or a trace when diagnosing requests, timing, or intermittent behavior. Do not produce heavy diagnostics for a simple successful smoke test.
 

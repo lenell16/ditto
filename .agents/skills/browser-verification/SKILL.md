@@ -112,6 +112,8 @@ For Codex in-app Browser verification, leave the final tab open as a deliverable
 
 For repeat loops, use Playwright CLI with a scenario name that includes the worktree and feature when useful, for example `ditto-main-chat-streaming`. Do not commit a regression test unless requested or clearly in scope.
 
+For a polished video demonstration, load `demo-making` and keep its WebM source, Cursor-facing MP4, and poster in `tmp/ditto-browser-evidence/`. Complete a non-recorded discovery pass first, and retain this skill's hydration, authentication, diagnostics, and verdict requirements during the recorded pass.
+
 ## Route tree
 
 When the dev server is running, adding or renaming files under `apps/web/src/routes/` updates `routeTree.gen.ts` automatically. Otherwise start the server or run a build. Commit the generated route tree when it changes.
