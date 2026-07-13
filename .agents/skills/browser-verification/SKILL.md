@@ -1,11 +1,11 @@
 ---
 name: browser-verification
-description: Verify UI, routes, authentication, and browser interactions in Ditto's apps/web using the project's Vite+, Portless, PGlite, and dev-user setup. Use for Memoria browser smoke tests, visual checks, bug reproduction, screenshots, console/network diagnostics, repeated browser loops, and end-of-task PASS/FAIL/BLOCKED reports. Extends browser-verification-workflow and selects Codex Browser, Playwright CLI, Chrome, Computer Use, or Agent Browser according to the scenario.
+description: Verify UI, routes, authentication, and browser interactions in Ditto's apps/web using Vite+, Portless, PGlite, and the seeded dev user. Use for Memoria browser smoke tests, visual checks, bug reproduction, screenshots, console/network diagnostics, and PASS/FAIL/BLOCKED reports. Extends browser-verification-workflow with project setup; does not force Agent Browser.
 ---
 
 # Browser Verification (Ditto)
 
-Load and follow `browser-verification-workflow`. This wrapper supplies only Ditto-specific setup, recovery, authentication, and validation.
+Load and follow `browser-verification-workflow`. This wrapper adds only Ditto setup, recovery, authentication, and validation. Surface selection stays runtime-native (Cursor Cloud Computer Use, Codex in-app Browser, Playwright CLI, Chrome, etc.).
 
 ## Project map
 
@@ -25,12 +25,12 @@ Use Vite+ commands; do not replace them with raw package-manager equivalents.
 
 ## Preflight
 
-1. Inspect existing task terminal output and reuse a healthy `vp run --filter web dev` process.
+1. Inspect existing task terminals and reuse a healthy `vp run --filter web dev` process.
 2. Resolve `MEMORIA="$(portless get memoria)"`.
 3. Confirm the app serves: `curl -sk -o /dev/null -w '%{http_code}' "$MEMORIA/login"` must return `200`.
-4. If the app is unavailable, start the Portless proxy before the dev server when necessary, then run `vp run --filter web dev`.
+4. If unavailable, start the Portless proxy before the dev server when needed, then run `vp run --filter web dev`.
 5. Confirm dev output shows the resolved Portless URL.
-6. Run `vp run --filter web check` and the relevant package tests when practical for the change under verification.
+6. Run `vp run --filter web check` and relevant package tests when practical for the change under verification.
 
 Do not start duplicate dev servers. A registered Portless alias can still return `000` or `404` when the app process is absent.
 
@@ -59,7 +59,7 @@ If login returns `INVALID_ORIGIN`, confirm the dev process received the exact `P
 
 ## Authentication
 
-Local development credentials are defined in `apps/web/src/dev/browser-auth.ts`:
+Local development credentials live in `apps/web/src/dev/browser-auth.ts`:
 
 | Field | Value |
 | --- | --- |
@@ -77,7 +77,7 @@ vp run --filter web seed:dev-user
 
 The login form is server-rendered. Wait for React hydration before submitting. Do not use `networkidle`; Vite HMR and the devtools console pipe keep connections open.
 
-A suitable React readiness check is:
+A suitable React readiness check:
 
 ```js
 Object.keys(document.querySelector('#email') || {}).some(
@@ -85,22 +85,24 @@ Object.keys(document.querySelector('#email') || {}).some(
 )
 ```
 
-Confirm successful authentication with the unambiguous home signal `Project ready!`.
+Confirm successful authentication with the home signal `Project ready!`.
 
-### Browser state
+### Browser state for Ditto
 
-- Use the in-app Browser's current state for ordinary authenticated verification when shared state is acceptable.
-- Use an isolated Playwright CLI scenario for clean login/logout, multiple users, or conflicting storage.
-- Use Chrome only when the user's real Chrome identity is part of the test.
-- Agent Browser's `ditto` vault remains a portable fallback outside Codex; do not require it for Codex-native verification.
+- If the chosen browser is already logged in for this worktree URL, reuse it (navigate / refresh). Prefer that over re-running a full login every time.
+- Use Codex in-app Browser shared state for ordinary authenticated checks when shared cookies are acceptable.
+- Use Cursor Cloud Computer Use against `$MEMORIA` the same way — shared Chrome profile in the VM is fine for smoke checks.
+- Use isolated Playwright (or Agent Browser only if Playwright is unavailable) for clean login/logout, multiple users, or conflicting storage.
+- Use Chrome / the user's connected browser only when their real identity is part of the test.
+- Optional Agent Browser `ditto` vault is a portable CLI helper, not a requirement for Codex-native or Cursor Cloud verification.
 
-Worktree URLs isolate app instances, not necessarily browser cookies. Separate tabs do not create separate authentication contexts.
+Worktree URLs isolate app instances, not necessarily browser cookies.
 
 ## Ditto verification loop
 
 1. Identify the route, scenario, expected behavior, and success signal.
 2. Complete preflight and seed the dev user when required.
-3. Let `browser-verification-workflow` select the surface and scenario state.
+3. Let `browser-verification-workflow` pick the surface from the current runtime.
 4. Open `${MEMORIA}/<route>` directly.
 5. Wait for target hydration before interactions.
 6. Exercise the flow and capture evidence in `tmp/ditto-browser-evidence/`.
@@ -108,11 +110,11 @@ Worktree URLs isolate app instances, not necessarily browser cookies. Separate t
 8. Check dev-server logs for server-side failures.
 9. Return the standard verdict and embed decisive screenshots.
 
-For Codex in-app Browser verification, leave the final tab open as a deliverable when it helps the user review or continue the flow. Clean up login, duplicate, or intermediate tabs.
+For Codex in-app Browser, leave the final tab open when it helps the user review or continue. Clean up login, duplicate, or intermediate tabs.
 
-For repeat loops, use Playwright CLI with a scenario name that includes the worktree and feature when useful, for example `ditto-main-chat-streaming`. Do not commit a regression test unless requested or clearly in scope.
+For repeat loops, use Playwright CLI with a scenario name that includes the worktree and feature when useful (for example `ditto-main-chat-streaming`). Do not commit a regression test unless requested or clearly in scope.
 
-For a polished video demonstration, load `demo-making` and keep its WebM source, Cursor-facing MP4, and poster in `tmp/ditto-browser-evidence/`. Complete a non-recorded discovery pass first, and retain this skill's hydration, authentication, diagnostics, and verdict requirements during the recorded pass.
+For a polished video, load `demo-making` and keep artifacts under `tmp/ditto-browser-evidence/`. Complete a non-recorded discovery pass first when using a scriptable recorder; keep this skill’s hydration, auth, diagnostics, and verdict requirements during the recorded pass.
 
 ## Route tree
 
@@ -129,13 +131,13 @@ tmp/ditto-browser-evidence/
   <scenario>-failure.png
 ```
 
-Capture `before` only when comparison matters; always capture the decisive final state for visual/interaction verification. Verify screenshots render correctly before reporting them.
+Capture `before` only when comparison matters; always capture the decisive final state. Verify screenshots render correctly before reporting them.
 
 Include:
 
 - PASS, FAIL, or BLOCKED
-- Surface and state mode
-- Resolved Memoria environment when relevant
+- Runtime, surface, and state mode
+- Resolved Memoria URL when relevant
 - Flow and strongest assertions
 - Console/network/server-log summary
 - Embedded decisive screenshots and links to traces or extra artifacts
