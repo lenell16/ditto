@@ -105,18 +105,27 @@ If the dev server is not running, start it to regenerate the tree while testing 
 - [ ] Check if there are `vite.config.ts` tasks or `package.json` scripts necessary for validation, run via `vp run <script>`.
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
-## Browser Verification
+## Apps, local data, and browser handoffs
 
-For UI or route changes in `apps/web`, use the **`browser-verification`** project
-skill — it extends **`browser-verification-workflow`** with Ditto dev setup
-(Portless, `memoria.localhost`, `vp check`/`test`). For other browser work in
-this repo, use **`browser-verification-workflow`**. Surface choice is
-**runtime-native first**: Cursor Cloud Computer Use, Codex in-app Browser,
-Playwright CLI for isolated/repeated/trace-heavy work, Chrome for the user's
-real browser identity, and Agent Browser only for portable CLI/headed recording
-or when no native surface exists. For polished videos, use **`demo-making`**
-(RecordScreen on Cursor Cloud; Agent Browser on local/CLI). See those skills for
-state reuse vs clean login, evidence capture, and reporting.
+- **Memoria web app:** `apps/web`; run `vp run --filter web dev` and resolve its
+  worktree-aware URL with `portless get memoria`. Main normally uses
+  `https://memoria.localhost`; linked worktrees receive a prefixed hostname.
+- **Browser extension:** `apps/ext`; run `vp run --filter ext dev` or
+  `vp run --filter ext build`.
+- **Local database:** leave `DATABASE_URL` unset to use worktree-local PGlite at
+  `.data/pglite`. It is single-process. Migrations apply automatically
+  on first `getDb()`; explicit commands are
+  `vp run --filter @workspace/db db:migrate` and
+  `vp run --filter @workspace/db db:studio`.
+- **Local auth:** seed before starting the web server with
+  `vp run --filter web seed:dev-user`; credentials are
+  `agent@memoria.local` / `local-dev-password`.
+
+For browser-visible changes, use the **`browser-handoff`** skill. Capture
+before/after screenshots for stable visual changes and a short video for
+interaction, motion, timing, streaming, or multi-step changes. Load
+**`demo-making`** only when video is warranted. Prefer the browser native to the
+current runtime; use isolated Playwright for repeatable or clean-state flows.
 
 <!--VITE PLUS END-->
 
@@ -158,9 +167,8 @@ e.g. `node_modules/vite-plus/docs`, are fine to read.)
 
 Environment-specific caveats for agents running in Cursor Cloud VMs. The startup
 update script runs `pnpm install --ignore-scripts` (deps are already installed
-and cached in the snapshot). Standard build/lint/test/run commands live in the
-Vite+ section above, `TESTING.md`, and the `browser-verification` skill — use
-those; the notes below only cover non-obvious gotchas.
+and cached in the snapshot). Standard commands and local app facts live above
+and in `TESTING.md`; the notes below only cover non-obvious cloud gotchas.
 
 - **Getting `vp` on PATH.** The global `vp` CLI is installed but only added to
   login shells. In a fresh non-interactive shell, run `. "$HOME/.vite-plus/env"`
@@ -176,8 +184,7 @@ those; the notes below only cover non-obvious gotchas.
 - **Start the Portless proxy before the web dev server, on an unprivileged
   port** (avoids the `sudo`/`:443` prompt that hangs a non-TTY shell):
   `pnpm exec portless proxy start -p 1355`, then `vp run --filter web dev`. The
-  app is served at `https://memoria.localhost:1355` (`portless get memoria`).
-  See the `browser-verification` skill for the full flow and more gotchas.
+  app URL is returned by `portless get memoria`.
 
 - **HTTPS cert trust (needed for browser testing).** The Portless CA
   (`~/.portless/ca.pem`) has been added to the system trust store and to
@@ -187,13 +194,8 @@ those; the notes below only cover non-obvious gotchas.
   `sudo cp ~/.portless/ca.pem /usr/local/share/ca-certificates/portless-ca.crt && sudo update-ca-certificates`
   and `certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n portless-ca -i ~/.portless/ca.pem`.
 
-- **pglite is single-process — seed before starting the dev server.** Local dev
-  uses embedded pglite (`apps/web/.data/pglite`), which only one process may hold
-  open. `vp run --filter web seed:dev-user` writes to that dir in a separate
-  process; a dev server that is already running will NOT see the new user until
-  restarted. So run the seed before `vp dev`, restart the dev server after
-  seeding, or just create the account via the login page's "Create one" link
-  (dev creds: `agent@memoria.local` / `local-dev-password`).
+- **Seed before starting the dev server.** A running server owns PGlite, so the
+  separate seed process cannot open it. Restart the server after seeding.
 
 - **AI chat provider.** The AI chat routes are driven by `AI_GATEWAY_API_KEY`,
   which is provisioned as an environment secret (auto-injected each session), so
