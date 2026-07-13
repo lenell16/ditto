@@ -148,3 +148,50 @@ an API — it is slow and unreliable. (Markdown docs vendored in `node_modules`,
 e.g. `node_modules/vite-plus/docs`, are fine to read.)
 
 <!-- DEPENDENCY LOOKUPS END -->
+
+## Cursor Cloud specific instructions
+
+Environment-specific caveats for agents running in Cursor Cloud VMs. The startup
+update script runs `pnpm install --ignore-scripts` (deps are already installed
+and cached in the snapshot). Standard build/lint/test/run commands live in the
+Vite+ section above, `TESTING.md`, and the `browser-verification` skill — use
+those; the notes below only cover non-obvious gotchas.
+
+- **Getting `vp` on PATH.** The global `vp` CLI is installed but only added to
+  login shells. In a fresh non-interactive shell, run `. "$HOME/.vite-plus/env"`
+  first, or invoke the workspace-local binary via `pnpm exec vp …` (same for
+  `pnpm exec portless …`).
+
+- **Do not run plain `pnpm install` / `vp install`.** Their `prepare` hook runs
+  `vp config`, which rewrites `AGENTS.md` (stripping repo-specific sections) and
+  dirties the tree. Use `pnpm install --ignore-scripts`. Skipping scripts loses
+  nothing here: the git hooks path is already managed, and the only unapproved
+  build scripts (esbuild/swc/msw/etc.) are not needed to build, test, or run.
+
+- **Start the Portless proxy before the web dev server, on an unprivileged
+  port** (avoids the `sudo`/`:443` prompt that hangs a non-TTY shell):
+  `pnpm exec portless proxy start -p 1355`, then `vp run --filter web dev`. The
+  app is served at `https://memoria.localhost:1355` (`portless get memoria`).
+  See the `browser-verification` skill for the full flow and more gotchas.
+
+- **HTTPS cert trust (needed for browser testing).** The Portless CA
+  (`~/.portless/ca.pem`) has been added to the system trust store and to
+  Chrome's NSS store (`~/.pki/nssdb`), so `curl` and the desktop Chrome trust
+  `memoria.localhost` without warnings. If Portless regenerates its CA (e.g.
+  `~/.portless` is recreated), re-trust it:
+  `sudo cp ~/.portless/ca.pem /usr/local/share/ca-certificates/portless-ca.crt && sudo update-ca-certificates`
+  and `certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n portless-ca -i ~/.portless/ca.pem`.
+
+- **pglite is single-process — seed before starting the dev server.** Local dev
+  uses embedded pglite (`apps/web/.data/pglite`), which only one process may hold
+  open. `vp run --filter web seed:dev-user` writes to that dir in a separate
+  process; a dev server that is already running will NOT see the new user until
+  restarted. So run the seed before `vp dev`, restart the dev server after
+  seeding, or just create the account via the login page's "Create one" link
+  (dev creds: `agent@memoria.local` / `local-dev-password`).
+
+- **AI chat needs a provider key.** Auth, memories, SSR, and the demo routes
+  (forms, data grid) work with no secrets. The AI chat routes only produce
+  responses when one of `AI_GATEWAY_API_KEY` / `ANTHROPIC_API_KEY` /
+  `OPENAI_API_KEY` is set (provider via `AI_PROVIDER`, default `gateway`); see
+  `apps/web/src/lib/ai.ts`. Leave `DATABASE_URL` unset to use local pglite.
