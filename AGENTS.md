@@ -110,11 +110,13 @@ If the dev server is not running, start it to regenerate the tree while testing 
 For UI or route changes in `apps/web`, use the **`browser-verification`** project
 skill — it extends **`browser-verification-workflow`** with Ditto dev setup
 (Portless, `memoria.localhost`, `vp check`/`test`). For other browser work in
-this repo, use **`browser-verification-workflow`**. It selects Codex's in-app
-Browser by default, Playwright CLI for isolated/repeated/trace-heavy work,
-Chrome for the user's existing browser identity, Computer Use for native UI,
-and Agent Browser as a portable fallback. See those skills for state isolation,
-evidence capture, and reporting.
+this repo, use **`browser-verification-workflow`**. Surface choice is
+**runtime-native first**: Cursor Cloud Computer Use, Codex in-app Browser,
+Playwright CLI for isolated/repeated/trace-heavy work, Chrome for the user's
+real browser identity, and Agent Browser only for portable CLI/headed recording
+or when no native surface exists. For polished videos, use **`demo-making`**
+(RecordScreen on Cursor Cloud; Agent Browser on local/CLI). See those skills for
+state reuse vs clean login, evidence capture, and reporting.
 
 <!--VITE PLUS END-->
 
